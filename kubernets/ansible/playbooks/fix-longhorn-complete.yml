@@ -1,0 +1,26 @@
+---
+- name: Corriger complètement la configuration Longhorn (nœuds + API)
+  hosts: localhost
+  become: false
+  vars:
+    kubeconfig_path: "{{ playbook_dir }}/../kube_config_cluster.yml"
+    longhorn_namespace: "longhorn-system"
+    longhorn_disk_path: "/var/lib/longhorn"
+
+  tasks:
+    - name: Vérifier que le kubeconfig existe
+      stat:
+        path: "{{ kubeconfig_path }}"
+      register: kubeconfig_stat
+
+    - name: Afficher les instructions
+      debug:
+        msg:
+          - "Ce playbook combine deux étapes :"
+          - "  1. Configuration des répertoires sur les nœuds"
+          - "  2. Configuration de Longhorn via l'API Kubernetes"
+          - ""
+          - "Exécutez d'abord: ansible-playbook playbooks/configure-longhorn-disks.yml"
+          - "Puis: ansible-playbook playbooks/fix-longhorn-disks.yml"
+      when: kubeconfig_stat.stat.exists
+

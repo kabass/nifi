@@ -1,0 +1,22 @@
+{{- if .Values.nifiRegistry.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nifi-platform.fullname" . }}-nifi-registry
+  labels:
+    {{- include "nifi-platform.nifiRegistry.labels" . | nindent 4 }}
+  {{- with .Values.nifiRegistry.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.nifiRegistry.service.type }}
+  ports:
+  - port: {{ .Values.nifiRegistry.service.port }}
+    targetPort: {{ .Values.nifiRegistry.properties.nifi.registry.web.http.port }}
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "nifi-platform.nifiRegistry.labels" . | nindent 4 }}
+{{- end }}
+

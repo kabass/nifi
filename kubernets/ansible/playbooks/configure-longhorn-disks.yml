@@ -1,0 +1,48 @@
+---
+- name: Configurer les disques Longhorn sur les nœuds
+  hosts: kubernetes
+  become: true
+  vars:
+    longhorn_disk_path: "/var/lib/longhorn"
+
+  tasks:
+    - name: Vérifier que le répertoire Longhorn existe
+      file:
+        path: "{{ longhorn_disk_path }}"
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Créer le répertoire si nécessaire
+      file:
+        path: "{{ longhorn_disk_path }}"
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Vérifier l'espace disque disponible
+      shell: df -h {{ longhorn_disk_path }} | tail -1 | awk '{print $4}'
+      register: disk_space
+      changed_when: false
+
+    - name: Afficher l'espace disque disponible
+      debug:
+        msg: "Espace disque disponible pour Longhorn sur {{ inventory_hostname }}: {{ disk_space.stdout }}"
+
+    - name: Vérifier les permissions du répertoire
+      stat:
+        path: "{{ longhorn_disk_path }}"
+      register: disk_stat
+
+    - name: Afficher les informations du disque
+      debug:
+        msg:
+          - "Répertoire Longhorn configuré: {{ longhorn_disk_path }}"
+          - "Permissions: {{ disk_stat.stat.mode | default('N/A') }}"
+          - "Espace disponible: {{ disk_space.stdout }}"
+          - ""
+          - "Note: Après cette configuration, vous devez configurer les disques dans l'interface Longhorn"
+          - "ou utiliser le playbook fix-longhorn-disks.yml pour configurer via l'API Kubernetes"
+

@@ -1,0 +1,9 @@
+# Dépendances Ansible pour le projet RKE
+# Installation: pip install -r requirements.txt
+
+ansible>=2.9.0
+ansible-core>=2.12.0
+
+# Collections Ansible optionnelles (utiles pour certaines fonctionnalités avancées)
+# Installation: ansible-galaxy collection install -r requirements.yml
+

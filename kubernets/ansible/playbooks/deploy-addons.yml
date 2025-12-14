@@ -1,0 +1,360 @@
+---
+- name: Déployer les addons Kubernetes via Helm (Longhorn, cert-manager, MetalLB)
+  hosts: localhost
+  become: false
+  vars:
+    kubeconfig_path: "{{ playbook_dir }}/../kube_config_cluster.yml"
+    addons_dir: "{{ playbook_dir }}/../addons"
+    # Versions des addons
+    longhorn_version: "v1.6.1"  # Version avec préfixe v pour les tags GitHub
+    longhorn_chart_version: "1.6.1"  # Version du chart Helm (sans préfixe v)
+    cert_manager_version: "1.14.4"
+    metallb_version: "0.14.5"
+
+  tasks:
+    - name: Vérifier que kubectl est disponible
+      command: which kubectl
+      register: kubectl_check
+      changed_when: false
+      failed_when: false
+
+    - name: Installer kubectl si nécessaire (macOS)
+      homebrew:
+        name: kubectl
+        state: present
+      when:
+        - ansible_system == "Darwin"
+        - kubectl_check.rc != 0
+
+    - name: Vérifier que helm est disponible
+      command: which helm
+      register: helm_check
+      changed_when: false
+      failed_when: false
+
+    - name: Installer Helm si nécessaire (macOS)
+      homebrew:
+        name: helm
+        state: present
+      when:
+        - ansible_system == "Darwin"
+        - helm_check.rc != 0
+
+    - name: Installer Helm si nécessaire (Linux)
+      get_url:
+        url: "https://get.helm.sh/helm-v3.14.0-linux-amd64.tar.gz"
+        dest: "/tmp/helm.tar.gz"
+        mode: '0644'
+      when:
+        - ansible_system == "Linux"
+        - helm_check.rc != 0
+
+    - name: Extraire et installer Helm (Linux)
+      unarchive:
+        src: /tmp/helm.tar.gz
+        dest: /tmp
+        remote_src: false
+      when:
+        - ansible_system == "Linux"
+        - helm_check.rc != 0
+
+    - name: Copier Helm binaire (Linux)
+      copy:
+        src: /tmp/linux-amd64/helm
+        dest: /usr/local/bin/helm
+        mode: '0755'
+        remote_src: false
+      when:
+        - ansible_system == "Linux"
+        - helm_check.rc != 0
+
+    - name: Vérifier que le kubeconfig existe
+      stat:
+        path: "{{ kubeconfig_path }}"
+      register: kubeconfig_stat
+
+    - name: Avertir si kubeconfig n'existe pas
+      debug:
+        msg: "Le fichier kubeconfig {{ kubeconfig_path }} n'existe pas. Déployez d'abord le cluster avec deploy-rke.yml"
+      when: not kubeconfig_stat.stat.exists
+
+    - name: Créer les namespaces
+      command: "kubectl --kubeconfig={{ kubeconfig_path }} create namespace {{ item }}"
+      loop:
+        - longhorn-system
+        - cert-manager
+        - metallb-system
+      when: kubeconfig_stat.stat.exists
+      ignore_errors: true
+      register: namespace_result
+      changed_when: namespace_result.rc == 0
+
+    - name: Ajouter le repo Helm Longhorn
+      shell: "helm repo add longhorn https://charts.longhorn.io"
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      when: kubeconfig_stat.stat.exists
+      ignore_errors: true
+
+    - name: Mettre à jour les repos Helm
+      shell: "helm repo update"
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      when: kubeconfig_stat.stat.exists
+
+    - name: Vérifier si Longhorn est déjà installé via Helm
+      shell: "helm list -n longhorn-system"
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: longhorn_helm_check
+      when: kubeconfig_stat.stat.exists
+      failed_when: false
+      changed_when: false
+
+    - name: Vérifier si Longhorn existe (non-Helm)
+      shell: "kubectl --kubeconfig={{ kubeconfig_path }} get priorityclass longhorn-critical --no-headers 2>/dev/null"
+      register: longhorn_existing
+      when: 
+        - kubeconfig_stat.stat.exists
+        - "'longhorn' not in (longhorn_helm_check.stdout | default(''))"
+      failed_when: false
+      changed_when: false
+
+    - name: Avertir si Longhorn existe déjà (non-Helm)
+      debug:
+        msg: 
+          - "Longhorn est déjà installé mais pas via Helm."
+          - "Pour migrer vers Helm, vous devez supprimer manuellement l'ancienne installation :"
+          - "  kubectl --kubeconfig={{ kubeconfig_path }} delete -f <manifest-longhorn.yaml>"
+          - "Puis relancer ce playbook."
+      when: 
+        - kubeconfig_stat.stat.exists
+        - longhorn_existing.rc == 0
+        - "'longhorn' not in (longhorn_helm_check.stdout | default(''))"
+
+    - name: Installer Longhorn via Helm
+      shell: >
+        helm upgrade --install longhorn longhorn/longhorn
+        --namespace longhorn-system
+        --create-namespace
+        --version {{ longhorn_chart_version }}
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: longhorn_install
+      when: >
+        kubeconfig_stat.stat.exists and
+        (longhorn_existing.rc != 0 or ('longhorn' in (longhorn_helm_check.stdout | default(''))))
+      ignore_errors: true
+      failed_when: false
+
+    - name: Afficher le résultat du déploiement Longhorn
+      debug:
+        msg: "Longhorn déployé avec succès via Helm"
+      when: 
+        - longhorn_install is defined
+        - longhorn_install.rc is defined
+        - longhorn_install.rc == 0
+
+    - name: Attendre que Longhorn soit prêt
+      shell: "kubectl --kubeconfig={{ kubeconfig_path }} get pods -n longhorn-system -l app=longhorn-manager -o jsonpath='{.items[*].metadata.name}' 2>/dev/null"
+      register: longhorn_pods
+      until: longhorn_pods.stdout | length > 0
+      retries: 30
+      delay: 10
+      when: kubeconfig_stat.stat.exists
+      failed_when: false
+
+    - name: Vérifier que la StorageClass longhorn existe
+      command: "kubectl --kubeconfig={{ kubeconfig_path }} get storageclass longhorn --no-headers"
+      register: longhorn_sc
+      until: longhorn_sc.rc == 0
+      retries: 20
+      delay: 10
+      failed_when: false
+      when: kubeconfig_stat.stat.exists
+
+    - name: Ajouter le repo Helm cert-manager
+      shell: "helm repo add jetstack https://charts.jetstack.io"
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      when: kubeconfig_stat.stat.exists
+      ignore_errors: true
+
+    - name: Mettre à jour les repos Helm
+      shell: "helm repo update"
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      when: kubeconfig_stat.stat.exists
+
+    - name: Vérifier si cert-manager est déjà installé via Helm
+      shell: "helm list -n cert-manager"
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: cert_manager_helm_check
+      when: kubeconfig_stat.stat.exists
+      failed_when: false
+      changed_when: false
+
+    - name: Vérifier si cert-manager existe (non-Helm)
+      shell: "kubectl --kubeconfig={{ kubeconfig_path }} get serviceaccount cert-manager-cainjector -n cert-manager --no-headers 2>/dev/null"
+      register: cert_manager_existing
+      when: 
+        - kubeconfig_stat.stat.exists
+        - "'cert-manager' not in (cert_manager_helm_check.stdout | default(''))"
+      failed_when: false
+      changed_when: false
+
+    - name: Avertir si cert-manager existe déjà (non-Helm)
+      debug:
+        msg: 
+          - "cert-manager est déjà installé mais pas via Helm."
+          - "Pour migrer vers Helm, vous devez supprimer manuellement l'ancienne installation."
+          - "Puis relancer ce playbook."
+      when: 
+        - kubeconfig_stat.stat.exists
+        - cert_manager_existing is defined
+        - cert_manager_existing.rc is defined
+        - cert_manager_existing.rc == 0
+        - "'cert-manager' not in (cert_manager_helm_check.stdout | default(''))"
+
+    - name: Installer cert-manager via Helm
+      shell: >
+        helm upgrade --install cert-manager jetstack/cert-manager
+        --namespace cert-manager
+        --create-namespace
+        --version v{{ cert_manager_version }}
+        --set installCRDs=true
+        --set global.storageClass=longhorn
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: cert_manager_install
+      when: >
+        kubeconfig_stat.stat.exists and
+        ((cert_manager_existing is not defined or cert_manager_existing.rc != 0) or ('cert-manager' in (cert_manager_helm_check.stdout | default(''))))
+      ignore_errors: true
+      failed_when: false
+
+    - name: Afficher le résultat du déploiement cert-manager
+      debug:
+        msg: "cert-manager déployé avec succès via Helm"
+      when: 
+        - cert_manager_install is defined
+        - cert_manager_install.rc is defined
+        - cert_manager_install.rc == 0
+
+    - name: Ajouter le repo Helm MetalLB
+      shell: "helm repo add metallb https://metallb.github.io/metallb"
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      when: kubeconfig_stat.stat.exists
+      ignore_errors: true
+
+    - name: Mettre à jour les repos Helm
+      shell: "helm repo update"
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      when: kubeconfig_stat.stat.exists
+
+    - name: Vérifier si MetalLB est déjà installé via Helm
+      shell: "helm list -n metallb-system"
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: metallb_helm_check
+      when: kubeconfig_stat.stat.exists
+      failed_when: false
+      changed_when: false
+
+    - name: Vérifier si MetalLB existe (non-Helm)
+      shell: "kubectl --kubeconfig={{ kubeconfig_path }} get deployment controller -n metallb-system --no-headers 2>/dev/null"
+      register: metallb_existing
+      when: 
+        - kubeconfig_stat.stat.exists
+        - "'metallb' not in (metallb_helm_check.stdout | default(''))"
+      failed_when: false
+      changed_when: false
+
+    - name: Avertir si MetalLB existe déjà (non-Helm)
+      debug:
+        msg: 
+          - "MetalLB est déjà installé mais pas via Helm."
+          - "Pour migrer vers Helm, vous devez supprimer manuellement l'ancienne installation."
+          - "Puis relancer ce playbook."
+      when: 
+        - kubeconfig_stat.stat.exists
+        - metallb_existing is defined
+        - metallb_existing.rc is defined
+        - metallb_existing.rc == 0
+        - "'metallb' not in (metallb_helm_check.stdout | default(''))"
+
+    - name: Installer MetalLB via Helm
+      shell: >
+        helm upgrade --install metallb metallb/metallb
+        --namespace metallb-system
+        --create-namespace
+        --version {{ metallb_version }}
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: metallb_install
+      when: >
+        kubeconfig_stat.stat.exists and
+        ((metallb_existing is not defined or metallb_existing.rc != 0) or ('metallb' in (metallb_helm_check.stdout | default(''))))
+      ignore_errors: true
+      failed_when: false
+
+    - name: Attendre que MetalLB soit prêt
+      shell: "kubectl --kubeconfig={{ kubeconfig_path }} get pods -n metallb-system -l app.kubernetes.io/name=metallb -o jsonpath='{.items[*].metadata.name}' 2>/dev/null"
+      register: metallb_pods
+      until: metallb_pods.stdout | length > 0
+      retries: 20
+      delay: 5
+      failed_when: false
+      when: kubeconfig_stat.stat.exists
+
+    - name: Appliquer la configuration MetalLB
+      command: "kubectl --kubeconfig={{ kubeconfig_path }} apply -f {{ addons_dir }}/metallb/config.yaml"
+      when: 
+        - kubeconfig_stat.stat.exists
+        - metallb_pods.stdout | length > 0
+
+    - name: Afficher le résultat du déploiement MetalLB
+      debug:
+        msg: "MetalLB déployé avec succès via Helm"
+      when: 
+        - metallb_install is defined
+        - metallb_install.rc is defined
+        - metallb_install.rc == 0
+
+    - name: Afficher le statut des addons
+      shell: "kubectl --kubeconfig={{ kubeconfig_path }} get pods -n {{ item }} --no-headers 2>/dev/null || echo 'Aucun pod trouvé'"
+      register: addon_status
+      loop:
+        - longhorn-system
+        - cert-manager
+        - metallb-system
+      when: kubeconfig_stat.stat.exists
+      changed_when: false
+      failed_when: false
+
+    - name: Afficher les releases Helm installées
+      shell: "helm list --all-namespaces"
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+      register: helm_list
+      when: kubeconfig_stat.stat.exists
+      changed_when: false
+      failed_when: false
+
+    - name: Résumé du déploiement
+      debug:
+        msg:
+          - "Addons déployés via Helm :"
+          - "  - Longhorn (storage class: longhorn) - version {{ longhorn_version }}"
+          - "  - cert-manager - version {{ cert_manager_version }}"
+          - "  - MetalLB - version {{ metallb_version }}"
+          - ""
+          - "Vérifiez le statut avec :"
+          - "  kubectl --kubeconfig={{ kubeconfig_path }} get pods --all-namespaces | grep -E 'longhorn|cert-manager|metallb'"
+          - "  KUBECONFIG={{ kubeconfig_path }} helm list --all-namespaces"
+          - ""
+          - "IMPORTANT: La configuration MetalLB (plage d'adresses IP) est dans addons/metallb/config.yaml"
+      when: kubeconfig_stat.stat.exists

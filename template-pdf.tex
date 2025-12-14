@@ -1,0 +1,53 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\geometry{margin=2cm}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+% Configuration des hyperliens
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdfauthor={Bassirou KA},
+    pdftitle={Proposition d'Offre - Accélération Mise en Place Dataplateforme},
+}
+
+% Configuration des en-têtes et pieds de page
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\fancyfoot[C]{Proposition d'Offre - CBAO}
+
+% Configuration des titres
+\titleformat{\section}
+  {\Large\bfseries\color{black}}
+  {}
+  {0em}
+  {}
+  [\titlerule[0.8pt]]
+
+\titleformat{\subsection}
+  {\large\bfseries\color{black}}
+  {}
+  {0em}
+  {}
+
+% Sauts de page avant les sections principales
+\let\oldsection\section
+\renewcommand{\section}{\clearpage\oldsection}
+
+\begin{document}
+
+\maketitle
+

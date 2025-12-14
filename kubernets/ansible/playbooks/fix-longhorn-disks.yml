@@ -1,0 +1,130 @@
+---
+- name: Corriger la configuration des disques Longhorn
+  hosts: localhost
+  become: false
+  vars:
+    kubeconfig_path: "{{ playbook_dir }}/../kube_config_cluster.yml"
+    longhorn_namespace: "longhorn-system"
+    longhorn_disk_path: "/var/lib/longhorn"
+
+  tasks:
+    - name: Vérifier que kubectl est disponible
+      command: which kubectl
+      register: kubectl_check
+      changed_when: false
+      failed_when: false
+
+    - name: Vérifier que le kubeconfig existe
+      stat:
+        path: "{{ kubeconfig_path }}"
+      register: kubeconfig_stat
+
+    - name: Obtenir la liste des nœuds
+      shell: "kubectl --kubeconfig={{ kubeconfig_path }} get nodes -o jsonpath='{.items[*].metadata.name}'"
+      register: nodes_list
+      when: kubeconfig_stat.stat.exists
+      changed_when: false
+
+    - name: Créer le répertoire Longhorn sur tous les nœuds (via Ansible)
+      shell: |
+        cd {{ playbook_dir }}/.. && ansible kubernetes -m shell -a "mkdir -p {{ longhorn_disk_path }} && chmod 755 {{ longhorn_disk_path }} && ls -ld {{ longhorn_disk_path }}"
+      when: kubeconfig_stat.stat.exists
+      ignore_errors: true
+
+    - name: Vérifier les settings Longhorn
+      shell: "kubectl --kubeconfig={{ kubeconfig_path }} get setting default-data-path -n {{ longhorn_namespace }} -o jsonpath='{.value}' 2>/dev/null || echo ''"
+      register: current_data_path
+      when: kubeconfig_stat.stat.exists
+      changed_when: false
+      failed_when: false
+
+    - name: Configurer le chemin de données par défaut
+      shell: |
+        kubectl --kubeconfig={{ kubeconfig_path }} patch setting default-data-path \
+          -n {{ longhorn_namespace }} \
+          --type merge \
+          -p '{"value":"{{ longhorn_disk_path }}"}'
+      when: 
+        - kubeconfig_stat.stat.exists
+        - current_data_path.stdout != longhorn_disk_path
+      ignore_errors: true
+
+    - name: Obtenir la liste des nœuds Longhorn
+      shell: "kubectl --kubeconfig={{ kubeconfig_path }} get nodes.longhorn.io -n {{ longhorn_namespace }} -o jsonpath='{.items[*].metadata.name}' 2>/dev/null || echo ''"
+      register: longhorn_nodes_list
+      when: kubeconfig_stat.stat.exists
+      changed_when: false
+      failed_when: false
+
+    - name: Configurer les disques pour chaque nœud Longhorn
+      shell: |
+        kubectl --kubeconfig={{ kubeconfig_path }} patch node.longhorn.io {{ item }} \
+          -n {{ longhorn_namespace }} \
+          --type merge \
+          -p '{
+            "spec": {
+              "allowScheduling": true,
+              "disks": {
+                "default-disk": {
+                  "path": "{{ longhorn_disk_path }}",
+                  "allowScheduling": true,
+                  "evictionRequested": false,
+                  "storageReserved": 0,
+                  "tags": []
+                }
+              }
+            }
+          }'
+      loop: "{{ nodes_list.stdout.split() }}"
+      when: 
+        - kubeconfig_stat.stat.exists
+        - nodes_list.stdout | length > 0
+      ignore_errors: true
+
+    - name: Attendre que Longhorn détecte les disques
+      pause:
+        seconds: 10
+      when: kubeconfig_stat.stat.exists
+
+    - name: Vérifier l'état des nœuds Longhorn
+      shell: "kubectl --kubeconfig={{ kubeconfig_path }} get nodes.longhorn.io -n {{ longhorn_namespace }} -o json"
+      register: longhorn_nodes_status
+      when: kubeconfig_stat.stat.exists
+      changed_when: false
+      failed_when: false
+
+    - name: Afficher l'état des nœuds
+      debug:
+        var: longhorn_nodes_status.stdout
+      when: 
+        - kubeconfig_stat.stat.exists
+        - longhorn_nodes_status.stdout | length > 0
+
+    - name: Vérifier les volumes en erreur
+      shell: "kubectl --kubeconfig={{ kubeconfig_path }} get volumes -n {{ longhorn_namespace }} -o json 2>/dev/null | jq -r '.items[] | select(.status.state == \"detached\" or .status.robustness == \"unknown\") | .metadata.name' || echo ''"
+      register: problematic_volumes
+      when: kubeconfig_stat.stat.exists
+      changed_when: false
+      failed_when: false
+
+    - name: Afficher les volumes problématiques
+      debug:
+        msg: "Volumes Longhorn nécessitant une attention: {{ problematic_volumes.stdout_lines }}"
+      when: 
+        - kubeconfig_stat.stat.exists
+        - problematic_volumes.stdout_lines | length > 0
+        - problematic_volumes.stdout_lines[0] != ""
+
+    - name: Instructions finales
+      debug:
+        msg:
+          - "Configuration des disques Longhorn terminée"
+          - ""
+          - "Vérifiez l'état avec:"
+          - "  kubectl --kubeconfig={{ kubeconfig_path }} get nodes.longhorn.io -n {{ longhorn_namespace }}"
+          - "  kubectl --kubeconfig={{ kubeconfig_path }} get volumes -n {{ longhorn_namespace }}"
+          - ""
+          - "Si les volumes sont toujours en erreur, accédez à l'interface Longhorn:"
+          - "  kubectl --kubeconfig={{ kubeconfig_path }} port-forward -n {{ longhorn_namespace }} svc/longhorn-frontend 8080:80"
+          - "  Puis ouvrez http://localhost:8080"
+      when: kubeconfig_stat.stat.exists

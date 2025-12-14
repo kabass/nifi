@@ -1,0 +1,42 @@
+Objet : Offre de Service - Data Plateforme (1 semaine) - Revue d'architecture et mise en place Nifi et Nifi Registry
+
+Madame, Monsieur,
+
+Je me permets de vous adresser la présente proposition d'offre concernant une intervention intensive d'une semaine pour accélérer la mise en place de votre dataplateforme.
+
+Cette offre se concentre sur les composants essentiels :
+
+✅ **Obligatoires** :
+- Revue et Challenge de l'architecture de la data plateforme (1 jour)
+- Mise en place d'Apache Nifi et Nifi Registry pour l'intégration de données (2 jours)
+
+⭐ **Nice to have** (selon temps disponible) :
+- Mise en place d'Apache Airflow pour l'orchestration (1 jour)
+- Mise en place de Trino pour l'accès SQL universel (1 jour)
+
+**Durée** : 1 semaine (5 jours ouvrés)  
+**Modalité** : 100% présentiel à Dakar  
+**Montant** : 2 100 000 FCFA TTC (forfait 5 jours)
+
+Cette intervention permettra de :
+- Valider et optimiser l'architecture proposée
+- Déployer et configurer Apache Nifi en production (cluster HA)
+- Déployer et configurer Nifi Registry pour la gestion de versions des flows
+- Si le temps le permet, mettre en place Airflow et Trino
+- Transférer les compétences à votre équipe Data Engineer
+
+Vous trouverez en pièce jointe :
+- L'offre de service détaillée
+- Mon curriculum vitae
+
+Je reste à votre disposition pour toute question ou pour organiser un échange afin de présenter cette proposition et répondre à vos interrogations.
+
+Dans l'attente de votre retour, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
+
+Bassirou KA
+Consultant Data Ops
+Tecsen France / Back Consulting Sénégal
+
+Email : ka.bassirou@gmail.com
+Téléphone : +33 6 34 24 79 25
+

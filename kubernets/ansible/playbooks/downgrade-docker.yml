@@ -1,0 +1,80 @@
+---
+- name: Installer Docker 23.0.x pour compatibilité avec RKE v1.8.8
+  hosts: kubernetes
+  become: true
+  tasks:
+    - name: Vérifier la version Docker actuelle
+      shell: docker version --format '{{ "{{" }}.Server.APIVersion{{ "}}" }}'
+      register: current_docker_api
+      changed_when: false
+      failed_when: false
+
+    - name: Afficher la version Docker actuelle
+      debug:
+        msg: "Version Docker API actuelle : {{ current_docker_api.stdout | default('Non détectée') }}"
+
+    - name: Vérifier si Docker nécessite un downgrade (API >= 1.44)
+      set_fact:
+        needs_downgrade: "{{ (current_docker_api.rc == 0) and (current_docker_api.stdout | default('') | regex_search('^1\\.(4[4-9]|[5-9]\\d)|^[2-9]') is not none) }}"
+
+    - name: Installer Docker 23.0.x (Debian/Ubuntu) - Essayer plusieurs versions
+      block:
+        - name: Essayer d'installer Docker 23.0.6
+          apt:
+            name:
+              - "docker-ce=5:23.0.6-1~ubuntu.22.04~jammy"
+              - "docker-ce-cli=5:23.0.6-1~ubuntu.22.04~jammy"
+            state: present
+            allow_downgrade: yes
+            update_cache: yes
+          ignore_errors: yes
+          register: docker_install_result
+
+        - name: Si échec, lister et installer la première version 23.0.x disponible
+          block:
+            - name: Lister les versions Docker 23.0.x
+              shell: apt-cache madison docker-ce | grep "5:23.0" | head -1 | awk '{print $3}'
+              register: docker_23_version
+              changed_when: false
+              failed_when: false
+
+            - name: Installer la version trouvée
+              apt:
+                name:
+                  - "docker-ce={{ docker_23_version.stdout }}"
+                  - "docker-ce-cli={{ docker_23_version.stdout }}"
+                state: present
+                allow_downgrade: yes
+                update_cache: yes
+          when: docker_install_result is failed
+      when: 
+        - ansible_os_family == "Debian"
+        - needs_downgrade | default(false)
+
+    - name: Installer Docker 23.0.x (RHEL/CentOS)
+      yum:
+        name:
+          - "docker-ce-23.0.*"
+          - "docker-ce-cli-23.0.*"
+        state: present
+        allow_downgrade: yes
+      when: 
+        - ansible_os_family == "RedHat"
+        - needs_downgrade | default(false)
+
+    - name: Redémarrer Docker
+      systemd:
+        name: docker
+        state: restarted
+      when: current_docker_api.rc == 0
+
+    - name: Vérifier la nouvelle version Docker
+      shell: docker version --format '{{ "{{" }}.Server.APIVersion{{ "}}" }}'
+      register: new_docker_api
+      changed_when: false
+      failed_when: false
+
+    - name: Afficher le résultat
+      debug:
+        msg: "Docker API version : {{ new_docker_api.stdout }} (compatible avec RKE v1.8.8 si < 1.44)"
+

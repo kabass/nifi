@@ -1,0 +1,543 @@
+ZOO_MY_ID set to: 2
+ZooKeeper JMX enabled by default
+Using config: /conf/zoo.cfg
+21:44:19.818 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeerConfig -- Reading configuration from: /conf/zoo.cfg
+21:44:19.825 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeerConfig -- clientPortAddress is 0.0.0.0:2181
+21:44:19.827 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeerConfig -- secureClientPort is not set
+21:44:19.827 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeerConfig -- observerMasterPort is not set
+21:44:19.827 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeerConfig -- metricsProvider.className is org.apache.zookeeper.metrics.impl.DefaultMetricsProvider
+21:44:19.842 [main] INFO org.apache.zookeeper.server.DatadirCleanupManager -- autopurge.snapRetainCount set to 3
+21:44:19.843 [main] INFO org.apache.zookeeper.server.DatadirCleanupManager -- autopurge.purgeInterval set to 1
+21:44:19.844 [PurgeTask] INFO org.apache.zookeeper.server.DatadirCleanupManager -- Purge task started.
+21:44:19.844 [main] INFO org.apache.zookeeper.jmx.ManagedUtil -- Log4j 1.2 jmx support not found; jmx disabled.
+21:44:19.845 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeerMain -- Starting quorum peer, myid=2
+21:44:19.849 [PurgeTask] DEBUG org.apache.zookeeper.server.persistence.FileTxnSnapLog -- Opening datadir:/data snapDir:/data
+21:44:19.849 [PurgeTask] INFO org.apache.zookeeper.server.persistence.FileTxnSnapLog -- zookeeper.snapshot.trust.empty : false
+21:44:19.860 [PurgeTask] INFO org.apache.zookeeper.server.persistence.SnapStream -- zookeeper.snapshot.compression.method = CHECKED
+21:44:19.910 [PurgeTask] INFO org.apache.zookeeper.server.DatadirCleanupManager -- Purge task completed.
+21:44:19.912 [main] INFO org.apache.zookeeper.server.ServerMetrics -- ServerMetrics initialized with provider org.apache.zookeeper.metrics.impl.DefaultMetricsProvider@71c8becc
+21:44:19.917 [main] INFO org.apache.zookeeper.server.auth.DigestAuthenticationProvider -- ACL digest algorithm is: SHA1
+21:44:19.918 [main] INFO org.apache.zookeeper.server.auth.DigestAuthenticationProvider -- zookeeper.DigestAuthenticationProvider.enabled = true
+21:44:19.925 [main] INFO org.apache.zookeeper.server.ServerCnxnFactory -- Using org.apache.zookeeper.server.NIOServerCnxnFactory as server connection factory
+21:44:19.927 [main] WARN org.apache.zookeeper.server.ServerCnxnFactory -- maxCnxns is not configured, using default value 0.
+21:44:19.931 [main] INFO org.apache.zookeeper.server.NIOServerCnxnFactory -- Configuring NIO connection handler with 10s sessionless connection timeout, 1 selector thread(s), 2 worker threads, and 64 kB direct buffers.
+21:44:19.946 [main] INFO org.apache.zookeeper.server.NIOServerCnxnFactory -- binding to port /0.0.0.0:2181
+21:44:19.962 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- zookeeper.quorumCnxnTimeoutMs=-1
+21:44:20.016 [main] DEBUG org.eclipse.jetty.util.log -- Logging to Logger[org.eclipse.jetty.util.log] via org.eclipse.jetty.util.log.Slf4jLog
+21:44:20.021 [main] INFO org.eclipse.jetty.util.log -- Logging initialized @1196ms to org.eclipse.jetty.util.log.Slf4jLog
+21:44:20.034 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- QueuedThreadPool[qtp514455215]@1ea9f6af{STOPPED,8<=0<=200,i=0,r=-1,q=0}[NO_TRY] added {org.eclipse.jetty.util.thread.ThreadPoolBudget@4d9e68d0,POJO}
+21:44:20.042 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- Server@3ce1e309{STOPPED}[9.4.57.v20241219] added {QueuedThreadPool[qtp514455215]@1ea9f6af{STOPPED,8<=0<=200,i=0,r=-1,q=0}[NO_TRY],AUTO}
+21:44:20.070 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- HttpConnectionFactory@18078bef[HTTP/1.1] added {HttpConfiguration@799f10e1{32768/8192,8192/8192,https://:0,[]},POJO}
+21:44:20.120 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ServerConnector@5656be13{null, ()}{0.0.0.0:0} added {Server@3ce1e309{STOPPED}[9.4.57.v20241219],UNMANAGED}
+21:44:20.120 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ServerConnector@5656be13{null, ()}{0.0.0.0:0} added {QueuedThreadPool[qtp514455215]@1ea9f6af{STOPPED,8<=0<=200,i=0,r=-1,q=0}[NO_TRY],AUTO}
+21:44:20.120 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ServerConnector@5656be13{null, ()}{0.0.0.0:0} added {ScheduledExecutorScheduler@443118b0{STOPPED},AUTO}
+21:44:20.121 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ServerConnector@5656be13{null, ()}{0.0.0.0:0} added {ArrayByteBufferPool@765d7657{minBufferCapacity=0, maxBufferCapacity=65536, maxQueueLength=-1, factor=1024},POJO}
+21:44:20.122 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ServerConnector@5656be13{null, (http/1.1)}{0.0.0.0:0} added {HttpConnectionFactory@18078bef[HTTP/1.1],AUTO}
+21:44:20.122 [main] DEBUG org.eclipse.jetty.server.AbstractConnector -- ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:0} added HttpConnectionFactory@18078bef[HTTP/1.1]
+21:44:20.128 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:0} added {SelectorManager@ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:0},MANAGED}
+21:44:20.128 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- Server@3ce1e309{STOPPED}[9.4.57.v20241219] added {ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:8080},AUTO}
+21:44:20.142 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- o.e.j.s.ServletContextHandler@489115ef{/,null,STOPPED} added {SymlinkAllowedResourceAliasChecker@3857f613{base=null,protected=null},MANAGED}
+21:44:20.148 [main] DEBUG org.eclipse.jetty.util.DecoratedObjectFactory -- Adding Decorator: org.eclipse.jetty.util.DeprecationWarning@367ffa75
+21:44:20.155 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- o.e.j.s.ServletContextHandler@489115ef{/,null,STOPPED} added {org.eclipse.jetty.server.session.SessionHandler20049680==dftMaxIdleSec=-1,MANAGED}
+21:44:20.160 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- org.eclipse.jetty.server.session.SessionHandler20049680==dftMaxIdleSec=-1 added {ServletHandler@587e5365{STOPPED},MANAGED}
+21:44:20.161 [main] WARN org.eclipse.jetty.server.handler.ContextHandler -- o.e.j.s.ServletContextHandler@489115ef{/,null,STOPPED} contextPath ends with /*
+21:44:20.161 [main] WARN org.eclipse.jetty.server.handler.ContextHandler -- Empty contextPath
+21:44:20.166 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ConstraintSecurityHandler@192c3f1e{STOPPED} added {org.eclipse.jetty.util.component.DumpableCollection@26b3fd41,POJO}
+21:44:20.167 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- org.eclipse.jetty.server.session.SessionHandler20049680==dftMaxIdleSec=-1 added {ConstraintSecurityHandler@192c3f1e{STOPPED},MANAGED}
+21:44:20.167 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ConstraintSecurityHandler@192c3f1e{STOPPED} added {ServletHandler@587e5365{STOPPED},MANAGED}
+21:44:20.167 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- Server@3ce1e309{STOPPED}[9.4.57.v20241219] added {o.e.j.s.ServletContextHandler@489115ef{/,null,STOPPED},MANAGED}
+21:44:20.175 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ServletHandler@587e5365{STOPPED} added {org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1==org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet@247c1923{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED},AUTO}
+21:44:20.175 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ServletHandler@587e5365{STOPPED} added {[/commands/*]=>org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1,POJO}
+21:44:20.179 [main] INFO org.apache.zookeeper.common.X509Util -- Setting -D jdk.tls.rejectClientInitiatedRenegotiation=true to disable client-initiated TLS renegotiation
+21:44:20.563 [main] INFO org.apache.zookeeper.common.X509Util -- Default TLS protocol is TLSv1.3, supported TLS protocols are [TLSv1.3, TLSv1.2, TLSv1.1, TLSv1, SSLv3, SSLv2Hello]
+21:44:20.565 [main] DEBUG org.apache.zookeeper.server.persistence.FileTxnSnapLog -- Opening datadir:/data snapDir:/data
+21:44:20.565 [main] INFO org.apache.zookeeper.server.persistence.FileTxnSnapLog -- zookeeper.snapshot.trust.empty : false
+21:44:20.565 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- Local sessions disabled
+21:44:20.565 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- Local session upgrading disabled
+21:44:20.565 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- tickTime set to 2000
+21:44:20.565 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- minSessionTimeout set to 4000
+21:44:20.565 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- maxSessionTimeout set to 40000
+21:44:20.565 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- initLimit set to 5
+21:44:20.565 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- syncLimit set to 2
+21:44:20.565 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- connectToLearnerMasterLimit set to 0
+21:44:20.576 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- 
+21:44:20.576 [main] INFO org.apache.zookeeper.server.ZooKeeperServer --   ______                  _                                          
+21:44:20.576 [main] INFO org.apache.zookeeper.server.ZooKeeperServer --  |___  /                 | |                                         
+21:44:20.576 [main] INFO org.apache.zookeeper.server.ZooKeeperServer --     / /    ___     ___   | | __   ___    ___   _ __     ___   _ __   
+21:44:20.576 [main] INFO org.apache.zookeeper.server.ZooKeeperServer --    / /    / _ \   / _ \  | |/ /  / _ \  / _ \ | '_ \   / _ \ | '__|
+21:44:20.576 [main] INFO org.apache.zookeeper.server.ZooKeeperServer --   / /__  | (_) | | (_) | |   <  |  __/ |  __/ | |_) | |  __/ | |    
+21:44:20.576 [main] INFO org.apache.zookeeper.server.ZooKeeperServer --  /_____|  \___/   \___/  |_|\_\  \___|  \___| | .__/   \___| |_|
+21:44:20.576 [main] INFO org.apache.zookeeper.server.ZooKeeperServer --                                               | |                     
+21:44:20.576 [main] INFO org.apache.zookeeper.server.ZooKeeperServer --                                               |_|                     
+21:44:20.577 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- 
+21:44:20.578 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:zookeeper.version=3.9.4-7246445ec281f3dbf53dc54e970c914f39713903, built on 2025-08-19 19:53 UTC
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:host.name=nifi-platform-zookeeper-1.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:java.version=17.0.17
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:java.vendor=Eclipse Adoptium
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:java.home=/opt/java/openjdk
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:java.class.path=/apache-zookeeper-3.9.4-bin/bin/../zookeeper-metrics-providers/zookeeper-prometheus-metrics/target/classes:/apache-zookeeper-3.9.4-bin/bin/../zookeeper-server/target/classes:/apache-zookeeper-3.9.4-bin/bin/../build/classes:/apache-zookeeper-3.9.4-bin/bin/../zookeeper-metrics-providers/zookeeper-prometheus-metrics/target/lib/*.jar:/apache-zookeeper-3.9.4-bin/bin/../zookeeper-server/target/lib/*.jar:/apache-zookeeper-3.9.4-bin/bin/../build/lib/*.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/zookeeper-prometheus-metrics-3.9.4.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/zookeeper-jute-3.9.4.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/zookeeper-3.9.4.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/snappy-java-1.1.10.5.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/slf4j-api-2.0.13.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/simpleclient_servlet-0.9.0.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/simpleclient_hotspot-0.9.0.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/simpleclient_common-0.9.0.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/simpleclient-0.9.0.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-transport-native-unix-common-4.1.119.Final.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-transport-native-epoll-4.1.119.Final-linux-x86_64.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-transport-classes-epoll-4.1.119.Final.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-transport-4.1.119.Final.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-tcnative-classes-2.0.70.Final.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-tcnative-boringssl-static-2.0.70.Final-windows-x86_64.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-tcnative-boringssl-static-2.0.70.Final-osx-x86_64.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-tcnative-boringssl-static-2.0.70.Final-osx-aarch_64.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-tcnative-boringssl-static-2.0.70.Final-linux-x86_64.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-tcnative-boringssl-static-2.0.70.Final-linux-aarch_64.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-tcnative-boringssl-static-2.0.70.Final.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-resolver-4.1.119.Final.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-handler-4.1.119.Final.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-common-4.1.119.Final.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-codec-4.1.119.Final.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/netty-buffer-4.1.119.Final.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/metrics-core-4.1.12.1.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/logback-core-1.3.15.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/logback-classic-1.3.15.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/jline-2.14.6.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/jetty-util-ajax-9.4.57.v20241219.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/jetty-util-9.4.57.v20241219.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/jetty-servlet-9.4.57.v20241219.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/jetty-server-9.4.57.v20241219.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/jetty-security-9.4.57.v20241219.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/jetty-io-9.4.57.v20241219.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/jetty-http-9.4.57.v20241219.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/javax.servlet-api-3.1.0.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/jackson-databind-2.15.2.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/jackson-core-2.15.2.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/jackson-annotations-2.15.2.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/commons-io-2.17.0.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/commons-cli-1.5.0.jar:/apache-zookeeper-3.9.4-bin/bin/../lib/audience-annotations-0.12.0.jar:/apache-zookeeper-3.9.4-bin/bin/../zookeeper-*.jar:/apache-zookeeper-3.9.4-bin/bin/../zookeeper-server/src/main/resources/lib/*.jar:/conf:
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:java.library.path=/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:java.io.tmpdir=/tmp
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:java.compiler=<NA>
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:os.name=Linux
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:os.arch=amd64
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:os.version=5.15.0-151-generic
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:user.name=zookeeper
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:user.home=/home/zookeeper
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:user.dir=/apache-zookeeper-3.9.4-bin
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:os.memory.free=7MB
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:os.memory.max=966MB
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- Server environment:os.memory.total=15MB
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- zookeeper.enableEagerACLCheck = false
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- zookeeper.digest.enabled = true
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- zookeeper.closeSessionTxn.enabled = true
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- zookeeper.serializeLastProcessedZxid.enabled = true
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- zookeeper.flushDelay = 0 ms
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- zookeeper.maxWriteQueuePollTime = 0 ms
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- zookeeper.maxBatchSize=1000
+21:44:20.579 [main] INFO org.apache.zookeeper.server.ZooKeeperServer -- zookeeper.intBufferStartingSizeBytes = 1024
+21:44:20.583 [main] INFO org.apache.zookeeper.server.watch.WatchManagerFactory -- Using org.apache.zookeeper.server.watch.WatchManager as watch manager
+21:44:20.583 [main] INFO org.apache.zookeeper.server.watch.WatchManagerFactory -- Using org.apache.zookeeper.server.watch.WatchManager as watch manager
+21:44:20.584 [main] INFO org.apache.zookeeper.server.ZKDatabase -- zookeeper.snapshotSizeFactor = 0.33
+21:44:20.584 [main] INFO org.apache.zookeeper.server.ZKDatabase -- zookeeper.commitLogCount=500
+21:44:20.615 [main] DEBUG org.apache.zookeeper.common.PathTrie -- zookeeper
+21:44:20.617 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- Using insecure (non-TLS) quorum communication
+21:44:20.618 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- Port unification disabled
+21:44:20.618 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- multiAddress.enabled set to false
+21:44:20.618 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- multiAddress.reachabilityCheckEnabled set to true
+21:44:20.618 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- multiAddress.reachabilityCheckTimeoutMs set to 1000
+21:44:20.618 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- QuorumPeer communication is not secured! (SASL auth disabled)
+21:44:20.618 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- quorum.cnxn.threads.size set to 20
+21:44:20.618 [main] INFO org.apache.zookeeper.server.persistence.FileSnap -- Reading snapshot /data/version-2/snapshot.10
+21:44:20.622 [main] INFO org.apache.zookeeper.server.DataTree -- The digest in the snapshot has digest version of 2, with zxid as 0x10, and digest value as 11949818705
+21:44:20.632 [main] DEBUG org.apache.zookeeper.server.persistence.FileTxnLog -- Created new input stream: /data/version-2/log.9
+21:44:20.638 [main] DEBUG org.apache.zookeeper.server.persistence.FileTxnLog -- Created new input archive: /data/version-2/log.9
+21:44:20.643 [main] DEBUG org.apache.zookeeper.server.persistence.FileTxnLog -- EOF exception
+java.io.EOFException: Failed to read /data/version-2/log.9
+	at org.apache.zookeeper.server.persistence.FileTxnLog$FileTxnIterator.next(FileTxnLog.java:793)
+	at org.apache.zookeeper.server.persistence.FileTxnLog$FileTxnIterator.<init>(FileTxnLog.java:657)
+	at org.apache.zookeeper.server.persistence.FileTxnLog.read(FileTxnLog.java:473)
+	at org.apache.zookeeper.server.persistence.FileTxnLog.read(FileTxnLog.java:460)
+	at org.apache.zookeeper.server.persistence.FileTxnSnapLog.fastForwardFromEdits(FileTxnSnapLog.java:330)
+	at org.apache.zookeeper.server.persistence.FileTxnSnapLog.lambda$restore$0(FileTxnSnapLog.java:267)
+	at org.apache.zookeeper.server.persistence.FileTxnSnapLog.restore(FileTxnSnapLog.java:312)
+	at org.apache.zookeeper.server.ZKDatabase.loadDataBase(ZKDatabase.java:290)
+	at org.apache.zookeeper.server.quorum.QuorumPeer.loadDataBase(QuorumPeer.java:1149)
+	at org.apache.zookeeper.server.quorum.QuorumPeer.start(QuorumPeer.java:1135)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.runFromConfig(QuorumPeerMain.java:229)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.initializeAndRun(QuorumPeerMain.java:137)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.main(QuorumPeerMain.java:91)
+21:44:20.644 [main] DEBUG org.apache.zookeeper.server.persistence.FileTxnLog -- Created new input stream: /data/version-2/log.11
+21:44:20.650 [main] DEBUG org.apache.zookeeper.server.persistence.FileTxnLog -- Created new input archive: /data/version-2/log.11
+21:44:20.651 [main] DEBUG org.apache.zookeeper.common.PathTrie -- nifi
+21:44:20.651 [main] DEBUG org.apache.zookeeper.server.DataTree -- Deleting ephemeral node /nifi/leaders/Cluster Coordinator/_c_612af5da-2552-42ec-9f52-4c8cd8f53d3e-lock-0000000000 for session 0x1000bdbdaa70000
+21:44:20.651 [main] INFO org.apache.zookeeper.audit.ZKAuditProvider -- ZooKeeper audit is disabled.
+21:44:20.652 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 11, Digest in log and actual tree: 8630784831
+21:44:20.654 [main] DEBUG org.apache.zookeeper.common.PathTrie -- nifi
+21:44:20.654 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 12, Digest in log and actual tree: 6767929342
+21:44:20.654 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 13, Digest in log and actual tree: 6767929342
+21:44:20.654 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 14, Digest in log and actual tree: 6767929342
+21:44:20.654 [main] DEBUG org.apache.zookeeper.common.PathTrie -- nifi
+21:44:20.654 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 15, Digest in log and actual tree: 3269148462
+21:44:20.654 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 16, Digest in log and actual tree: 3269148462
+21:44:20.654 [main] DEBUG org.apache.zookeeper.server.DataTree -- Ignoring processTxn failure hdr: -1 : error: -101
+21:44:20.654 [main] DEBUG org.apache.zookeeper.server.persistence.FileTxnSnapLog -- Ignoring processTxn failure hdr: -1, error: -101, path: null
+21:44:20.655 [main] DEBUG org.apache.zookeeper.common.PathTrie -- nifi
+21:44:20.655 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 18, Digest in log and actual tree: 7011681177
+21:44:20.655 [main] DEBUG org.apache.zookeeper.common.PathTrie -- nifi
+21:44:20.655 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 19, Digest in log and actual tree: 7347204477
+21:44:20.655 [main] DEBUG org.apache.zookeeper.common.PathTrie -- nifi
+21:44:20.655 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 1a, Digest in log and actual tree: 12577509786
+21:44:20.655 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 1b, Digest in log and actual tree: 12577509786
+21:44:20.656 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 1c, Digest in log and actual tree: 12577509786
+21:44:20.656 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 1d, Digest in log and actual tree: 12577509786
+21:44:20.656 [main] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 1e, Digest in log and actual tree: 12577509786
+21:44:20.656 [main] DEBUG org.apache.zookeeper.server.persistence.FileTxnLog -- EOF exception
+java.io.EOFException: Failed to read /data/version-2/log.11
+	at org.apache.zookeeper.server.persistence.FileTxnLog$FileTxnIterator.next(FileTxnLog.java:793)
+	at org.apache.zookeeper.server.persistence.FileTxnSnapLog.fastForwardFromEdits(FileTxnSnapLog.java:361)
+	at org.apache.zookeeper.server.persistence.FileTxnSnapLog.lambda$restore$0(FileTxnSnapLog.java:267)
+	at org.apache.zookeeper.server.persistence.FileTxnSnapLog.restore(FileTxnSnapLog.java:312)
+	at org.apache.zookeeper.server.ZKDatabase.loadDataBase(ZKDatabase.java:290)
+	at org.apache.zookeeper.server.quorum.QuorumPeer.loadDataBase(QuorumPeer.java:1149)
+	at org.apache.zookeeper.server.quorum.QuorumPeer.start(QuorumPeer.java:1135)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.runFromConfig(QuorumPeerMain.java:229)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.initializeAndRun(QuorumPeerMain.java:137)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.main(QuorumPeerMain.java:91)
+21:44:20.656 [main] INFO org.apache.zookeeper.server.persistence.FileTxnSnapLog -- 14 txns loaded in 6 ms
+21:44:20.656 [main] INFO org.apache.zookeeper.server.ZKDatabase -- Snapshot loaded in 38 ms, highest zxid is 0x1e, digest is 12577509786
+21:44:20.656 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- currentEpoch not found! Creating with a reasonable default of 0. This should only happen when you are upgrading your installation
+21:44:20.666 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- acceptedEpoch not found! Creating with a reasonable default of 0. This should only happen when you are upgrading your installation
+21:44:20.674 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting Server@3ce1e309{STOPPED}[9.4.57.v20241219]
+21:44:20.678 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- Server@3ce1e309{STARTING}[9.4.57.v20241219] added {ErrorHandler@64b0598{STOPPED},AUTO}
+21:44:20.679 [main] INFO org.eclipse.jetty.server.Server -- jetty-9.4.57.v20241219; built: 2025-01-08T21:24:30.412Z; git: df524e6b29271c2e09ba9aea83c18dc9db464a31; jvm 17.0.17+10
+21:44:20.690 [main] DEBUG org.eclipse.jetty.server.handler.AbstractHandler -- starting Server@3ce1e309{STARTING}[9.4.57.v20241219]
+21:44:20.691 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting QueuedThreadPool[qtp514455215]@1ea9f6af{STOPPED,8<=0<=200,i=0,r=-1,q=0}[NO_TRY]
+21:44:20.692 [main] DEBUG org.eclipse.jetty.util.thread.ReservedThreadExecutor -- ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}
+21:44:20.692 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- QueuedThreadPool[qtp514455215]@1ea9f6af{STARTING,8<=0<=200,i=0,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}] added {ReservedThreadExecutor@62656be4{reserved=0/1,pending=0},AUTO}
+21:44:20.692 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}
+21:44:20.697 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1872ms ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}
+21:44:20.697 [main] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Starting Thread[qtp514455215-19,5,main]
+21:44:20.698 [main] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Starting Thread[qtp514455215-20,5,main]
+21:44:20.698 [qtp514455215-19] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Runner started for QueuedThreadPool[qtp514455215]@1ea9f6af{STARTING,8<=2<=200,i=2,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}]
+21:44:20.698 [main] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Starting Thread[qtp514455215-21,5,main]
+21:44:20.698 [qtp514455215-20] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Runner started for QueuedThreadPool[qtp514455215]@1ea9f6af{STARTING,8<=3<=200,i=3,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}]
+21:44:20.699 [qtp514455215-21] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Runner started for QueuedThreadPool[qtp514455215]@1ea9f6af{STARTING,8<=4<=200,i=4,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}]
+21:44:20.699 [main] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Starting Thread[qtp514455215-22,5,main]
+21:44:20.699 [main] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Starting Thread[qtp514455215-23,5,main]
+21:44:20.699 [qtp514455215-22] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Runner started for QueuedThreadPool[qtp514455215]@1ea9f6af{STARTING,8<=5<=200,i=5,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}]
+21:44:20.699 [main] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Starting Thread[qtp514455215-24,5,main]
+21:44:20.700 [main] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Starting Thread[qtp514455215-25,5,main]
+21:44:20.700 [qtp514455215-24] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Runner started for QueuedThreadPool[qtp514455215]@1ea9f6af{STARTING,8<=7<=200,i=7,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}]
+21:44:20.700 [main] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Starting Thread[qtp514455215-26,5,main]
+21:44:20.700 [qtp514455215-25] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Runner started for QueuedThreadPool[qtp514455215]@1ea9f6af{STARTING,8<=8<=200,i=8,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}]
+21:44:20.701 [qtp514455215-23] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Runner started for QueuedThreadPool[qtp514455215]@1ea9f6af{STARTING,8<=6<=200,i=6,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}]
+21:44:20.710 [qtp514455215-26] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- Runner started for QueuedThreadPool[qtp514455215]@1ea9f6af{STARTED,8<=8<=200,i=8,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}]
+21:44:20.710 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1885ms QueuedThreadPool[qtp514455215]@1ea9f6af{STARTED,8<=8<=200,i=8,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}]
+21:44:20.710 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting o.e.j.s.ServletContextHandler@489115ef{/,null,STOPPED}
+21:44:20.716 [main] DEBUG org.eclipse.jetty.http.PreEncodedHttpField -- HttpField encoders loaded: [org.eclipse.jetty.http.Http1FieldPreEncoder@51bd8b5c]
+21:44:20.721 [main] DEBUG org.eclipse.jetty.server.handler.AbstractHandler -- starting o.e.j.s.ServletContextHandler@489115ef{/,null,STARTING}
+21:44:20.721 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting SymlinkAllowedResourceAliasChecker@3857f613{base=null,protected=null}
+21:44:20.721 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1896ms SymlinkAllowedResourceAliasChecker@3857f613{base=null,protected=null}
+21:44:20.721 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting org.eclipse.jetty.server.session.SessionHandler20049680==dftMaxIdleSec=-1
+21:44:20.723 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- org.eclipse.jetty.server.session.SessionHandler20049680==dftMaxIdleSec=-1 added {org.eclipse.jetty.server.session.DefaultSessionCache@75c56eb9[evict=-1,removeUnloadable=false,saveOnCreate=false,saveOnInactiveEvict=false],AUTO}
+21:44:20.723 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- org.eclipse.jetty.server.session.DefaultSessionCache@75c56eb9[evict=-1,removeUnloadable=false,saveOnCreate=false,saveOnInactiveEvict=false] added {org.eclipse.jetty.server.session.NullSessionDataStore@34b9f960[passivating=false,graceSec=3600],AUTO}
+21:44:20.724 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting DefaultSessionIdManager@791d1f8b{STOPPED}[worker=null]
+21:44:20.724 [main] INFO org.eclipse.jetty.server.session -- DefaultSessionIdManager workerName=node0
+21:44:20.724 [main] INFO org.eclipse.jetty.server.session -- No SessionScavenger set, using defaults
+21:44:20.725 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- DefaultSessionIdManager@791d1f8b{STARTING}[worker=node0] added {HouseKeeper@24c22fe{STOPPED}[interval=600000, ownscheduler=false],MANAGED}
+21:44:20.725 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting HouseKeeper@24c22fe{STOPPED}[interval=600000, ownscheduler=false]
+21:44:20.725 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting ScheduledExecutorScheduler@93081b6{STOPPED}
+21:44:20.726 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1901ms ScheduledExecutorScheduler@93081b6{STARTED}
+21:44:20.726 [main] DEBUG org.eclipse.jetty.server.session -- Using own scheduler for scavenging
+21:44:20.726 [main] INFO org.eclipse.jetty.server.session -- node0 Scavenging every 600000ms
+21:44:20.727 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1902ms HouseKeeper@24c22fe{STARTED}[interval=600000, ownscheduler=true]
+21:44:20.728 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1903ms DefaultSessionIdManager@791d1f8b{STARTED}[worker=node0]
+21:44:20.728 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- Server@3ce1e309{STARTING}[9.4.57.v20241219] added {DefaultSessionIdManager@791d1f8b{STARTED}[worker=node0],MANAGED}
+21:44:20.728 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- org.eclipse.jetty.server.session.SessionHandler20049680==dftMaxIdleSec=-1 added {DefaultSessionIdManager@791d1f8b{STARTED}[worker=node0],UNMANAGED}
+21:44:20.728 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting ScheduledExecutorScheduler@42e25b0b{STOPPED}
+21:44:20.728 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1903ms ScheduledExecutorScheduler@42e25b0b{STARTED}
+21:44:20.729 [main] DEBUG org.eclipse.jetty.server.handler.AbstractHandler -- starting org.eclipse.jetty.server.session.SessionHandler20049680==dftMaxIdleSec=-1
+21:44:20.729 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting ConstraintSecurityHandler@192c3f1e{STOPPED}
+21:44:20.730 [main] WARN org.eclipse.jetty.security.SecurityHandler -- ServletContext@o.e.j.s.ServletContextHandler@489115ef{/,null,STARTING} has uncovered http methods for path: /*
+21:44:20.730 [main] DEBUG org.eclipse.jetty.security.SecurityHandler -- 
+java.lang.Throwable: null
+	at org.eclipse.jetty.security.ConstraintSecurityHandler.checkPathsWithUncoveredHttpMethods(ConstraintSecurityHandler.java:762)
+	at org.eclipse.jetty.security.ConstraintSecurityHandler.doStart(ConstraintSecurityHandler.java:415)
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:73)
+	at org.eclipse.jetty.util.component.ContainerLifeCycle.start(ContainerLifeCycle.java:169)
+	at org.eclipse.jetty.util.component.ContainerLifeCycle.doStart(ContainerLifeCycle.java:110)
+	at org.eclipse.jetty.server.handler.AbstractHandler.doStart(AbstractHandler.java:97)
+	at org.eclipse.jetty.server.handler.ScopedHandler.doStart(ScopedHandler.java:120)
+	at org.eclipse.jetty.server.session.SessionHandler.doStart(SessionHandler.java:505)
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:73)
+	at org.eclipse.jetty.util.component.ContainerLifeCycle.start(ContainerLifeCycle.java:169)
+	at org.eclipse.jetty.util.component.ContainerLifeCycle.doStart(ContainerLifeCycle.java:110)
+	at org.eclipse.jetty.server.handler.AbstractHandler.doStart(AbstractHandler.java:97)
+	at org.eclipse.jetty.server.handler.ScopedHandler.doStart(ScopedHandler.java:120)
+	at org.eclipse.jetty.server.handler.ContextHandler.startContext(ContextHandler.java:975)
+	at org.eclipse.jetty.servlet.ServletContextHandler.startContext(ServletContextHandler.java:375)
+	at org.eclipse.jetty.server.handler.ContextHandler.doStart(ContextHandler.java:916)
+	at org.eclipse.jetty.servlet.ServletContextHandler.doStart(ServletContextHandler.java:288)
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:73)
+	at org.eclipse.jetty.util.component.ContainerLifeCycle.start(ContainerLifeCycle.java:169)
+	at org.eclipse.jetty.server.Server.start(Server.java:423)
+	at org.eclipse.jetty.util.component.ContainerLifeCycle.doStart(ContainerLifeCycle.java:110)
+	at org.eclipse.jetty.server.handler.AbstractHandler.doStart(AbstractHandler.java:97)
+	at org.eclipse.jetty.server.Server.doStart(Server.java:387)
+	at org.eclipse.jetty.util.component.AbstractLifeCycle.start(AbstractLifeCycle.java:73)
+	at org.apache.zookeeper.server.admin.JettyAdminServer.start(JettyAdminServer.java:190)
+	at org.apache.zookeeper.server.quorum.QuorumPeer.start(QuorumPeer.java:1138)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.runFromConfig(QuorumPeerMain.java:229)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.initializeAndRun(QuorumPeerMain.java:137)
+	at org.apache.zookeeper.server.quorum.QuorumPeerMain.main(QuorumPeerMain.java:91)
+21:44:20.731 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ConstraintSecurityHandler@192c3f1e{STARTING} added {org.eclipse.jetty.security.DefaultIdentityService@2cb2fc20,POJO}
+21:44:20.731 [main] DEBUG org.eclipse.jetty.server.handler.AbstractHandler -- starting ConstraintSecurityHandler@192c3f1e{STARTING}
+21:44:20.732 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting ServletHandler@587e5365{STOPPED}
+21:44:20.737 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- Path=/commands/*[EMBEDDED:null] mapped to servlet=org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1[EMBEDDED:null]
+21:44:20.739 [main] DEBUG org.eclipse.jetty.http.pathmap.ServletPathSpec -- Creating ServletPathSpec[/commands/*] (group: PREFIX_GLOB, prefix: "/commands", suffix: "null")
+21:44:20.739 [main] DEBUG org.eclipse.jetty.http.pathmap.PathMappings -- Added MappedResource[pathSpec=ServletPathSpec@a6e8ae40{/commands/*},resource=org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1==org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet@247c1923{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED}] to PathMappings[size=1]
+21:44:20.740 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- filterNameMap={}
+21:44:20.740 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- pathFilters=null
+21:44:20.740 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- servletFilterMap=null
+21:44:20.740 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- servletPathMap=PathMappings[size=1]
+21:44:20.740 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- servletNameMap={org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1=org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1==org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet@247c1923{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED}}
+21:44:20.740 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- Adding Default404Servlet to ServletHandler@587e5365{STARTING}
+21:44:20.741 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ServletHandler@587e5365{STARTING} added {org.eclipse.jetty.servlet.ServletHandler$Default404Servlet-6736fa8d==org.eclipse.jetty.servlet.ServletHandler$Default404Servlet@fe4ee99f{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED},AUTO}
+21:44:20.741 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ServletHandler@587e5365{STARTING} added {[/]=>org.eclipse.jetty.servlet.ServletHandler$Default404Servlet-6736fa8d,POJO}
+21:44:20.741 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- Path=/commands/*[EMBEDDED:null] mapped to servlet=org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1[EMBEDDED:null]
+21:44:20.741 [main] DEBUG org.eclipse.jetty.http.pathmap.ServletPathSpec -- Creating ServletPathSpec[/commands/*] (group: PREFIX_GLOB, prefix: "/commands", suffix: "null")
+21:44:20.741 [main] DEBUG org.eclipse.jetty.http.pathmap.PathMappings -- Added MappedResource[pathSpec=ServletPathSpec@a6e8ae40{/commands/*},resource=org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1==org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet@247c1923{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED}] to PathMappings[size=1]
+21:44:20.741 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- Path=/[EMBEDDED:null] mapped to servlet=org.eclipse.jetty.servlet.ServletHandler$Default404Servlet-6736fa8d[EMBEDDED:null]
+21:44:20.742 [main] DEBUG org.eclipse.jetty.http.pathmap.PathMappings -- Added MappedResource[pathSpec=ServletPathSpec@9457dcb7{/},resource=org.eclipse.jetty.servlet.ServletHandler$Default404Servlet-6736fa8d==org.eclipse.jetty.servlet.ServletHandler$Default404Servlet@fe4ee99f{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED}] to PathMappings[size=2]
+21:44:20.742 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- filterNameMap={}
+21:44:20.742 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- pathFilters=null
+21:44:20.742 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- servletFilterMap=null
+21:44:20.742 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- servletPathMap=PathMappings[size=2]
+21:44:20.742 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- servletNameMap={org.eclipse.jetty.servlet.ServletHandler$Default404Servlet-6736fa8d=org.eclipse.jetty.servlet.ServletHandler$Default404Servlet-6736fa8d==org.eclipse.jetty.servlet.ServletHandler$Default404Servlet@fe4ee99f{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED}, org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1=org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1==org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet@247c1923{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED}}
+21:44:20.742 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- Path=/commands/*[EMBEDDED:null] mapped to servlet=org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1[EMBEDDED:null]
+21:44:20.742 [main] DEBUG org.eclipse.jetty.http.pathmap.ServletPathSpec -- Creating ServletPathSpec[/commands/*] (group: PREFIX_GLOB, prefix: "/commands", suffix: "null")
+21:44:20.743 [main] DEBUG org.eclipse.jetty.http.pathmap.PathMappings -- Added MappedResource[pathSpec=ServletPathSpec@a6e8ae40{/commands/*},resource=org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1==org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet@247c1923{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED}] to PathMappings[size=1]
+21:44:20.743 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- Path=/[EMBEDDED:null] mapped to servlet=org.eclipse.jetty.servlet.ServletHandler$Default404Servlet-6736fa8d[EMBEDDED:null]
+21:44:20.743 [main] DEBUG org.eclipse.jetty.http.pathmap.PathMappings -- Added MappedResource[pathSpec=ServletPathSpec@9457dcb7{/},resource=org.eclipse.jetty.servlet.ServletHandler$Default404Servlet-6736fa8d==org.eclipse.jetty.servlet.ServletHandler$Default404Servlet@fe4ee99f{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED}] to PathMappings[size=2]
+21:44:20.743 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- filterNameMap={}
+21:44:20.743 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- pathFilters=null
+21:44:20.743 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- servletFilterMap=null
+21:44:20.743 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- servletPathMap=PathMappings[size=2]
+21:44:20.743 [main] DEBUG org.eclipse.jetty.servlet.ServletHandler -- servletNameMap={org.eclipse.jetty.servlet.ServletHandler$Default404Servlet-6736fa8d=org.eclipse.jetty.servlet.ServletHandler$Default404Servlet-6736fa8d==org.eclipse.jetty.servlet.ServletHandler$Default404Servlet@fe4ee99f{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED}, org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1=org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1==org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet@247c1923{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED}}
+21:44:20.743 [main] DEBUG org.eclipse.jetty.server.handler.AbstractHandler -- starting ServletHandler@587e5365{STARTING}
+21:44:20.744 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1919ms ServletHandler@587e5365{STARTED}
+21:44:20.744 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1919ms ConstraintSecurityHandler@192c3f1e{STARTED}
+21:44:20.744 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting org.eclipse.jetty.server.session.DefaultSessionCache@75c56eb9[evict=-1,removeUnloadable=false,saveOnCreate=false,saveOnInactiveEvict=false]
+21:44:20.744 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting org.eclipse.jetty.server.session.NullSessionDataStore@34b9f960[passivating=false,graceSec=3600]
+21:44:20.744 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1919ms org.eclipse.jetty.server.session.NullSessionDataStore@34b9f960[passivating=false,graceSec=3600]
+21:44:20.744 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1919ms org.eclipse.jetty.server.session.DefaultSessionCache@75c56eb9[evict=-1,removeUnloadable=false,saveOnCreate=false,saveOnInactiveEvict=false]
+21:44:20.744 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1919ms org.eclipse.jetty.server.session.SessionHandler20049680==dftMaxIdleSec=-1
+21:44:20.749 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1==org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet@247c1923{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED}
+21:44:20.750 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1925ms org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1==org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet@247c1923{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STARTED}
+21:44:20.751 [main] DEBUG org.eclipse.jetty.servlet.ServletHolder -- Servlet.init null for org.apache.zookeeper.server.admin.JettyAdminServer$CommandServlet-672872e1
+21:44:20.751 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting org.eclipse.jetty.servlet.ServletHandler$Default404Servlet-6736fa8d==org.eclipse.jetty.servlet.ServletHandler$Default404Servlet@fe4ee99f{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STOPPED}
+21:44:20.751 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1927ms org.eclipse.jetty.servlet.ServletHandler$Default404Servlet-6736fa8d==org.eclipse.jetty.servlet.ServletHandler$Default404Servlet@fe4ee99f{jsp=null,order=-1,inst=false,async=true,src=EMBEDDED:null,STARTED}
+21:44:20.752 [main] INFO org.eclipse.jetty.server.handler.ContextHandler -- Started o.e.j.s.ServletContextHandler@489115ef{/,null,AVAILABLE}
+21:44:20.752 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1927ms o.e.j.s.ServletContextHandler@489115ef{/,null,AVAILABLE}
+21:44:20.752 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting ErrorHandler@64b0598{STOPPED}
+21:44:20.752 [main] DEBUG org.eclipse.jetty.server.handler.AbstractHandler -- starting ErrorHandler@64b0598{STARTING}
+21:44:20.752 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1928ms ErrorHandler@64b0598{STARTED}
+21:44:20.753 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+21:44:20.753 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:8080} added {sun.nio.ch.ServerSocketChannelImpl[/0.0.0.0:8080],POJO}
+21:44:20.754 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting ScheduledExecutorScheduler@443118b0{STOPPED}
+21:44:20.754 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1929ms ScheduledExecutorScheduler@443118b0{STARTED}
+21:44:20.754 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting HttpConnectionFactory@18078bef[HTTP/1.1]
+21:44:20.754 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1929ms HttpConnectionFactory@18078bef[HTTP/1.1]
+21:44:20.754 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting SelectorManager@ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+21:44:20.757 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- EatWhatYouKill@4b5189ac/SelectorProducer@1e4d3ce5/IDLE/p=false/QueuedThreadPool[qtp514455215]@1ea9f6af{STARTED,8<=8<=200,i=8,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}][pc=0,pic=0,pec=0,epc=0]@2025-12-14T21:44:20.757331169Z added {SelectorProducer@1e4d3ce5,POJO}
+21:44:20.757 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- EatWhatYouKill@4b5189ac/SelectorProducer@1e4d3ce5/IDLE/p=false/QueuedThreadPool[qtp514455215]@1ea9f6af{STARTED,8<=8<=200,i=8,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}][pc=0,pic=0,pec=0,epc=0]@2025-12-14T21:44:20.757790968Z added {QueuedThreadPool[qtp514455215]@1ea9f6af{STARTED,8<=8<=200,i=8,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}],UNMANAGED}
+21:44:20.758 [main] DEBUG org.eclipse.jetty.util.thread.strategy.EatWhatYouKill -- EatWhatYouKill@4b5189ac/SelectorProducer@1e4d3ce5/IDLE/p=false/QueuedThreadPool[qtp514455215]@1ea9f6af{STARTED,8<=8<=200,i=8,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}][pc=0,pic=0,pec=0,epc=0]@2025-12-14T21:44:20.758097168Z created
+21:44:20.758 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ManagedSelector@3ddc6915{STOPPED} id=0 keys=-1 selected=-1 updates=0 added {EatWhatYouKill@4b5189ac/SelectorProducer@1e4d3ce5/IDLE/p=false/QueuedThreadPool[qtp514455215]@1ea9f6af{STARTED,8<=8<=200,i=8,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}][pc=0,pic=0,pec=0,epc=0]@2025-12-14T21:44:20.758418538Z,MANAGED}
+21:44:20.758 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- SelectorManager@ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:8080} added {ManagedSelector@3ddc6915{STOPPED} id=0 keys=-1 selected=-1 updates=0,AUTO}
+21:44:20.758 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting ManagedSelector@3ddc6915{STOPPED} id=0 keys=-1 selected=-1 updates=0
+21:44:20.759 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- starting EatWhatYouKill@4b5189ac/SelectorProducer@1e4d3ce5/IDLE/p=false/QueuedThreadPool[qtp514455215]@1ea9f6af{STARTED,8<=8<=200,i=8,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}][pc=0,pic=0,pec=0,epc=0]@2025-12-14T21:44:20.759030067Z
+21:44:20.759 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1934ms EatWhatYouKill@4b5189ac/SelectorProducer@1e4d3ce5/IDLE/p=false/QueuedThreadPool[qtp514455215]@1ea9f6af{STARTED,8<=8<=200,i=8,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}][pc=0,pic=0,pec=0,epc=0]@2025-12-14T21:44:20.759287057Z
+21:44:20.760 [main] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- queue org.eclipse.jetty.io.ManagedSelector$$Lambda$176/0x00007f72d3186d38@404bbcbd startThread=0
+21:44:20.760 [qtp514455215-19] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- run org.eclipse.jetty.io.ManagedSelector$$Lambda$176/0x00007f72d3186d38@404bbcbd in QueuedThreadPool[qtp514455215]@1ea9f6af{STARTED,8<=8<=200,i=7,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}]
+21:44:20.760 [qtp514455215-19] DEBUG org.eclipse.jetty.util.thread.strategy.EatWhatYouKill -- EatWhatYouKill@4b5189ac/SelectorProducer@1e4d3ce5/IDLE/p=false/QueuedThreadPool[qtp514455215]@1ea9f6af{STARTED,8<=8<=200,i=7,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}][pc=0,pic=0,pec=0,epc=0]@2025-12-14T21:44:20.760556805Z tryProduce false
+21:44:20.760 [main] DEBUG org.eclipse.jetty.io.ManagedSelector -- Queued change lazy=false org.eclipse.jetty.io.ManagedSelector$Start@2b9ed6da on ManagedSelector@3ddc6915{STARTING} id=0 keys=0 selected=0 updates=0
+21:44:20.761 [qtp514455215-19] DEBUG org.eclipse.jetty.io.ManagedSelector -- updateable 1
+21:44:20.761 [qtp514455215-19] DEBUG org.eclipse.jetty.io.ManagedSelector -- update org.eclipse.jetty.io.ManagedSelector$Start@2b9ed6da
+21:44:20.761 [qtp514455215-19] DEBUG org.eclipse.jetty.io.ManagedSelector -- updates 0
+21:44:20.761 [qtp514455215-19] DEBUG org.eclipse.jetty.io.ManagedSelector -- Selector sun.nio.ch.EPollSelectorImpl@35a4b972 waiting with 0 keys
+21:44:20.761 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1936ms ManagedSelector@3ddc6915{STARTED} id=0 keys=0 selected=0 updates=0
+21:44:20.761 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1936ms SelectorManager@ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+21:44:20.761 [main] DEBUG org.eclipse.jetty.util.component.ContainerLifeCycle -- ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:8080} added {acceptor-0@389c4eb1,POJO}
+21:44:20.762 [qtp514455215-21] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- run acceptor-0@389c4eb1 in QueuedThreadPool[qtp514455215]@1ea9f6af{STARTED,8<=8<=200,i=6,r=-1,q=0}[ReservedThreadExecutor@62656be4{reserved=0/1,pending=0}]
+21:44:20.809 [main] DEBUG org.eclipse.jetty.util.thread.QueuedThreadPool -- queue qtp514455215-21-acceptor-0@389c4eb1-ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:8080} startThread=0
+21:44:20.810 [main] INFO org.eclipse.jetty.server.AbstractConnector -- Started ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+21:44:20.810 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1985ms ServerConnector@5656be13{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+21:44:20.810 [main] INFO org.eclipse.jetty.server.Server -- Started @1985ms
+21:44:20.810 [main] DEBUG org.eclipse.jetty.util.component.AbstractLifeCycle -- STARTED @1985ms Server@3ce1e309{STARTED}[9.4.57.v20241219]
+21:44:20.810 [main] INFO org.apache.zookeeper.server.admin.JettyAdminServer -- Started AdminServer on address 0.0.0.0, port 8080 and command URL /commands
+21:44:20.810 [main] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- Using 4000ms as the quorum cnxn socket timeout
+21:44:20.815 [main] INFO org.apache.zookeeper.server.quorum.QuorumCnxManager -- Election port bind maximum retries is 3
+21:44:20.815 [QuorumPeerListener] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Listener thread started, myId: 2
+21:44:20.816 [main] INFO org.apache.zookeeper.server.quorum.FastLeaderElection -- zookeeper.fastleader.minNotificationInterval = 200 ms
+21:44:20.816 [main] INFO org.apache.zookeeper.server.quorum.FastLeaderElection -- zookeeper.fastleader.maxNotificationInterval = 60000 ms
+21:44:20.818 [ListenerHandler-nifi-platform-zookeeper-1.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local/10.42.2.117:3888] INFO org.apache.zookeeper.server.quorum.QuorumCnxManager -- 2 is accepting connections now, my election bind port: nifi-platform-zookeeper-1.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local/10.42.2.117:3888
+21:44:20.819 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.QuorumPeer -- Starting quorum peer
+21:44:20.824 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- LOOKING
+21:44:20.825 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.QuorumPeer -- Initializing leader election protocol...
+21:44:20.825 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Updating proposal: 2 (newleader), 0x1e (newzxid), -1 (oldleader), 0xffffffffffffffff (oldzxid)
+21:44:20.825 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.FastLeaderElection -- New election. My id = 2, proposed zxid=0x1e
+21:44:20.826 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Sending Notification: 2 (n.leader), 0x1e (n.zxid), 0x0 (n.peerEpoch), 0x1 (n.round), 1 (recipient), 2 (myid) 
+21:44:20.827 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Sending Notification: 2 (n.leader), 0x1e (n.zxid), 0x0 (n.peerEpoch), 0x1 (n.round), 2 (recipient), 2 (myid) 
+21:44:20.827 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Sending Notification: 2 (n.leader), 0x1e (n.zxid), 0x0 (n.peerEpoch), 0x1 (n.round), 3 (recipient), 2 (myid) 
+21:44:20.832 [WorkerSender[myid=2]] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Server 2 knows 1 already, it is in the lastCommittedView
+21:44:20.835 [WorkerSender[myid=2]] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Server 2 knows 3 already, it is in the lastCommittedView
+21:44:20.835 [QuorumConnectionThread-[myid=2]-2] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Opening channel to server 3
+21:44:20.835 [WorkerReceiver[myid=2]] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Receive new notification message. My id = 2
+21:44:20.836 [WorkerReceiver[myid=2]] INFO org.apache.zookeeper.server.quorum.FastLeaderElection -- Notification: my state:LOOKING; n.sid:2, n.state:LOOKING, n.leader:2, n.round:0x1, n.peerEpoch:0x0, n.zxid:0x1e, message format version:0x2, n.config version:0x0
+21:44:20.836 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- id: 2, proposed id: 2, zxid: 0x1e, proposed zxid: 0x1e, epoch: 0x0, proposed epoch: 0x0
+21:44:20.836 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Adding vote: from=2, proposed leader=2, proposed zxid=0x1e, proposed election epoch=0x1
+21:44:20.837 [QuorumConnectionThread-[myid=2]-1] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Opening channel to server 1
+21:44:20.838 [QuorumConnectionThread-[myid=2]-1] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Connected to server 1 using election address: nifi-platform-zookeeper-0.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local/10.42.1.101:3888
+21:44:20.838 [QuorumConnectionThread-[myid=2]-2] WARN org.apache.zookeeper.server.quorum.QuorumCnxManager -- Cannot open channel to 3 at election address nifi-platform-zookeeper-2.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local/<unresolved>:3888
+java.net.UnknownHostException: nifi-platform-zookeeper-2.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local
+	at java.base/sun.nio.ch.NioSocketImpl.connect(Unknown Source)
+	at java.base/java.net.SocksSocketImpl.connect(Unknown Source)
+	at java.base/java.net.Socket.connect(Unknown Source)
+	at org.apache.zookeeper.server.quorum.QuorumCnxManager.initiateConnection(QuorumCnxManager.java:384)
+	at org.apache.zookeeper.server.quorum.QuorumCnxManager$QuorumConnectionReqThread.run(QuorumCnxManager.java:458)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+21:44:20.838 [QuorumConnectionThread-[myid=2]-1] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- startConnection (myId:2 --> sid:1)
+21:44:20.840 [QuorumConnectionThread-[myid=2]-1] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Have larger server identifier, so keeping the connection: (myId:2 --> sid:1)
+21:44:20.841 [QuorumConnectionThread-[myid=2]-1] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Address of remote peer: 1
+21:44:20.842 [SendWorker:1] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- SendWorker thread started towards 1. myId: 2
+21:44:20.843 [RecvWorker:1] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- RecvWorker thread towards 1 started. myId: 2
+21:44:20.844 [WorkerReceiver[myid=2]] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Receive new notification message. My id = 2
+21:44:20.844 [WorkerReceiver[myid=2]] INFO org.apache.zookeeper.server.quorum.FastLeaderElection -- Notification: my state:LOOKING; n.sid:1, n.state:LOOKING, n.leader:1, n.round:0x1, n.peerEpoch:0x0, n.zxid:0x3c, message format version:0x2, n.config version:0x0
+21:44:20.844 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- id: 1, proposed id: 2, zxid: 0x3c, proposed zxid: 0x1e, epoch: 0x0, proposed epoch: 0x0
+21:44:20.844 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Updating proposal: 1 (newleader), 0x3c (newzxid), 2 (oldleader), 0x1e (oldzxid)
+21:44:20.844 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Sending Notification: 1 (n.leader), 0x3c (n.zxid), 0x0 (n.peerEpoch), 0x1 (n.round), 1 (recipient), 2 (myid) 
+21:44:20.845 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Sending Notification: 1 (n.leader), 0x3c (n.zxid), 0x0 (n.peerEpoch), 0x1 (n.round), 2 (recipient), 2 (myid) 
+21:44:20.845 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Sending Notification: 1 (n.leader), 0x3c (n.zxid), 0x0 (n.peerEpoch), 0x1 (n.round), 3 (recipient), 2 (myid) 
+21:44:20.845 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Adding vote: from=1, proposed leader=1, proposed zxid=0x3c, proposed election epoch=0x1
+21:44:20.845 [WorkerSender[myid=2]] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- There is a connection already for server 1
+21:44:20.846 [WorkerSender[myid=2]] DEBUG org.apache.zookeeper.util.CircularBlockingQueue -- Queue is full. Discarding oldest element [count=1]: java.nio.HeapByteBuffer[pos=494 lim=494 cap=494]
+21:44:20.846 [WorkerSender[myid=2]] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Server 2 knows 3 already, it is in the lastCommittedView
+21:44:20.910 [QuorumConnectionThread-[myid=2]-3] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Opening channel to server 3
+21:44:20.910 [WorkerReceiver[myid=2]] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Receive new notification message. My id = 2
+21:44:20.910 [WorkerReceiver[myid=2]] INFO org.apache.zookeeper.server.quorum.FastLeaderElection -- Notification: my state:LOOKING; n.sid:2, n.state:LOOKING, n.leader:1, n.round:0x1, n.peerEpoch:0x0, n.zxid:0x3c, message format version:0x2, n.config version:0x0
+21:44:20.910 [QuorumConnectionThread-[myid=2]-3] WARN org.apache.zookeeper.server.quorum.QuorumCnxManager -- Cannot open channel to 3 at election address nifi-platform-zookeeper-2.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local/<unresolved>:3888
+java.net.UnknownHostException: nifi-platform-zookeeper-2.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local
+	at java.base/sun.nio.ch.NioSocketImpl.connect(Unknown Source)
+	at java.base/java.net.SocksSocketImpl.connect(Unknown Source)
+	at java.base/java.net.Socket.connect(Unknown Source)
+	at org.apache.zookeeper.server.quorum.QuorumCnxManager.initiateConnection(QuorumCnxManager.java:384)
+	at org.apache.zookeeper.server.quorum.QuorumCnxManager$QuorumConnectionReqThread.run(QuorumCnxManager.java:458)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at java.base/java.lang.Thread.run(Unknown Source)
+21:44:20.911 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- id: 1, proposed id: 1, zxid: 0x3c, proposed zxid: 0x3c, epoch: 0x0, proposed epoch: 0x0
+21:44:20.911 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Adding vote: from=2, proposed leader=1, proposed zxid=0x3c, proposed election epoch=0x1
+21:44:21.111 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- I am a participant: 2
+21:44:21.112 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- Peer state changed: following
+21:44:21.112 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- About to leave FLE instance: leader=1, zxid=0x3c, my id=2, my state=FOLLOWING
+21:44:21.112 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.jmx.MBeanRegistry -- Unregister MBean [org.apache.ZooKeeperService:name0=ReplicatedServer_id2,name1=replica.2,name2=LeaderElection]
+21:44:21.112 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Number of connection processing threads: 3
+21:44:21.112 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- FOLLOWING
+21:44:21.117 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.Learner -- leaderConnectDelayDuringRetryMs: 100
+21:44:21.117 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.Learner -- TCP NoDelay set to: true
+21:44:21.117 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.Learner -- zookeeper.learner.asyncSending = false
+21:44:21.117 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.Learner -- zookeeper.learner.closeSocketAsync = false
+21:44:21.119 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.BlueThrottle -- Weighed connection throttling is disabled
+21:44:21.120 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.AuthenticationHelper -- zookeeper.enforce.auth.enabled = false
+21:44:21.120 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.AuthenticationHelper -- zookeeper.enforce.auth.schemes = []
+21:44:21.121 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.ZooKeeperServer -- minSessionTimeout set to 4000 ms
+21:44:21.122 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.ZooKeeperServer -- maxSessionTimeout set to 40000 ms
+21:44:21.123 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.ResponseCache -- getData response cache size is initialized with value 400.
+21:44:21.124 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.ResponseCache -- getChildren response cache size is initialized with value 400.
+21:44:21.125 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.util.RequestPathMetricsCollector -- zookeeper.pathStats.slotCapacity = 60
+21:44:21.125 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.util.RequestPathMetricsCollector -- zookeeper.pathStats.slotDuration = 15
+21:44:21.125 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.util.RequestPathMetricsCollector -- zookeeper.pathStats.maxDepth = 6
+21:44:21.125 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.util.RequestPathMetricsCollector -- zookeeper.pathStats.initialDelay = 5
+21:44:21.125 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.util.RequestPathMetricsCollector -- zookeeper.pathStats.delay = 5
+21:44:21.125 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.util.RequestPathMetricsCollector -- zookeeper.pathStats.enabled = false
+21:44:21.126 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.ZooKeeperServer -- The max bytes for all large requests are set to 104857600
+21:44:21.126 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.ZooKeeperServer -- The large request threshold is set to -1
+21:44:21.126 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.ZooKeeperServer -- Created server with tickTime 2000 ms minSessionTimeout 4000 ms maxSessionTimeout 40000 ms clientPortListenBacklog -1 dataLogdir /data/version-2 snapdir /data/version-2
+21:44:21.127 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.Learner -- FOLLOWING - LEADER ELECTION TOOK - 303 MS
+21:44:21.132 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- Peer state changed: following - discovery
+21:44:21.136 [LeaderConnector-nifi-platform-zookeeper-0.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local/10.42.1.101:2888] INFO org.apache.zookeeper.server.quorum.Learner -- Successfully connected to leader, using address: nifi-platform-zookeeper-0.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local/10.42.1.101:2888
+21:44:21.161 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- Peer state changed: following - synchronization
+21:44:21.164 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- Peer state changed: following - synchronization - snap
+21:44:21.165 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.Learner -- Getting a snapshot from leader 0x3c
+21:44:21.165 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.watch.WatchManagerFactory -- Using org.apache.zookeeper.server.watch.WatchManager as watch manager
+21:44:21.165 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.watch.WatchManagerFactory -- Using org.apache.zookeeper.server.watch.WatchManager as watch manager
+21:44:21.165 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.Learner -- Reset config node content from local config after deserialization of snapshot.
+21:44:21.165 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.common.PathTrie -- zookeeper
+21:44:21.166 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.common.PathTrie -- zookeeper
+21:44:21.167 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.Learner -- Learner received NEWLEADER message
+21:44:21.169 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- Dynamic reconfig is disabled, we don't store the last seen config.
+21:44:21.169 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.persistence.FileTxnSnapLog -- Snapshotting: 0x3c to /data/version-2/snapshot.3c
+21:44:21.176 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.ZooKeeperServer -- Snapshot taken in 7 ms
+21:44:21.182 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.Learner -- Set the current epoch to 1
+21:44:21.182 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- Peer state changed: following - synchronization
+21:44:21.183 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.Learner -- Sent NEWLEADER ack to leader with zxid 100000000
+21:44:21.207 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.Learner -- Learner received UPTODATE message
+21:44:21.207 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.QuorumPeer -- Reconfig feature is disabled, skip reconfig processing.
+21:44:21.212 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.CommitProcessor -- Configuring CommitProcessor with readBatchSize -1 commitBatchSize 1
+21:44:21.212 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.CommitProcessor -- Configuring CommitProcessor with 1 worker threads.
+21:44:21.213 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.FollowerRequestProcessor -- Initialized FollowerRequestProcessor with zookeeper.follower.skipLearnerRequestToNextProcessor as false
+21:44:21.216 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.RequestThrottler -- zookeeper.request_throttler.shutdownTimeout = 10000 ms
+21:44:21.228 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.Learner -- 0 txns have been logged asynchronously
+21:44:21.229 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.Learner -- 0 txns have been committed
+21:44:21.229 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] INFO org.apache.zookeeper.server.quorum.QuorumPeer -- Peer state changed: following - broadcast
+21:44:31.203 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] WARN org.apache.zookeeper.server.quorum.Learner -- Got zxid 0x100000001 expected 0x1
+21:44:31.204 [SyncThread:2] INFO org.apache.zookeeper.server.persistence.FileTxnLog -- Creating new log file: log.100000001
+21:44:31.216 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Committing request:: sessionid:0x1000bdfdf750000 type:closeSession cxid:0x0 zxid:0x100000001 txntype:-11 reqpath:n/a
+21:44:31.216 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x1000bdfdf750000 type:closeSession cxid:0x0 zxid:0x100000001 txntype:-11 reqpath:n/a
+21:44:31.217 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 100000001, Digest in log and actual tree: 3199430557
+21:44:33.771 [ListenerHandler-nifi-platform-zookeeper-1.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local/10.42.2.117:3888] INFO org.apache.zookeeper.server.quorum.QuorumCnxManager -- Received connection request from /10.42.0.112:35010
+21:44:33.772 [ListenerHandler-nifi-platform-zookeeper-1.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local/10.42.2.117:3888] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Sync handling of connection request received from: /10.42.0.112:35010
+21:44:33.774 [ListenerHandler-nifi-platform-zookeeper-1.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local/10.42.2.117:3888] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Initial message parsed by 2: InitialMessage{sid=3, electionAddr=[nifi-platform-zookeeper-2.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local/10.42.0.112:3888]}
+21:44:33.774 [ListenerHandler-nifi-platform-zookeeper-1.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local/10.42.2.117:3888] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- Address of remote peer: 3
+21:44:33.775 [SendWorker:3] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- SendWorker thread started towards 3. myId: 2
+21:44:33.775 [RecvWorker:3] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- RecvWorker thread towards 3 started. myId: 2
+21:44:33.776 [WorkerReceiver[myid=2]] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Receive new notification message. My id = 2
+21:44:33.776 [WorkerReceiver[myid=2]] INFO org.apache.zookeeper.server.quorum.FastLeaderElection -- Notification: my state:FOLLOWING; n.sid:3, n.state:LOOKING, n.leader:3, n.round:0x1, n.peerEpoch:0x0, n.zxid:0x16, message format version:0x2, n.config version:0x0
+21:44:33.777 [WorkerReceiver[myid=2]] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Sending new notification. My id =2 recipient=3 zxid=0x3c leader=1 config version = 0
+21:44:33.778 [WorkerReceiver[myid=2]] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Receive new notification message. My id = 2
+21:44:33.778 [WorkerSender[myid=2]] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- There is a connection already for server 3
+21:44:33.784 [WorkerReceiver[myid=2]] INFO org.apache.zookeeper.server.quorum.FastLeaderElection -- Notification: my state:FOLLOWING; n.sid:3, n.state:LOOKING, n.leader:1, n.round:0x1, n.peerEpoch:0x0, n.zxid:0x3c, message format version:0x2, n.config version:0x0
+21:44:33.785 [WorkerReceiver[myid=2]] DEBUG org.apache.zookeeper.server.quorum.FastLeaderElection -- Sending new notification. My id =2 recipient=3 zxid=0x3c leader=1 config version = 0
+21:44:33.786 [WorkerSender[myid=2]] DEBUG org.apache.zookeeper.server.quorum.QuorumCnxManager -- There is a connection already for server 3
+21:45:25.534 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Committing request:: sessionid:0x3000bf2e8b00000 type:createSession cxid:0x0 zxid:0x100000002 txntype:-10 reqpath:n/a
+21:45:25.536 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x3000bf2e8b00000 type:createSession cxid:0x0 zxid:0x100000002 txntype:-10 reqpath:n/a
+21:45:25.536 [CommitProcessor:2] INFO org.apache.zookeeper.server.quorum.LearnerSessionTracker -- Committing global session 0x3000bf2e8b00000
+21:45:25.536 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 100000002, Digest in log and actual tree: 3199430557
+21:45:25.598 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Committing request:: sessionid:0x3000bf2e8b00000 type:closeSession cxid:0x5 zxid:0x100000003 txntype:-11 reqpath:n/a
+21:45:25.598 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x3000bf2e8b00000 type:closeSession cxid:0x5 zxid:0x100000003 txntype:-11 reqpath:n/a
+21:45:25.598 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 100000003, Digest in log and actual tree: 3199430557
+21:45:25.716 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Committing request:: sessionid:0x3000bf2e8b00001 type:createSession cxid:0x0 zxid:0x100000004 txntype:-10 reqpath:n/a
+21:45:25.717 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x3000bf2e8b00001 type:createSession cxid:0x0 zxid:0x100000004 txntype:-10 reqpath:n/a
+21:45:25.717 [CommitProcessor:2] INFO org.apache.zookeeper.server.quorum.LearnerSessionTracker -- Committing global session 0x3000bf2e8b00001
+21:45:25.717 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 100000004, Digest in log and actual tree: 3199430557
+21:45:30.579 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Committing request:: sessionid:0x3000bf2e8b00001 type:error cxid:0x4 zxid:0x100000005 txntype:-1 reqpath:n/a
+21:45:30.579 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x3000bf2e8b00001 type:error cxid:0x4 zxid:0x100000005 txntype:-1 reqpath:n/a
+21:45:30.579 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.DataTree -- Ignoring processTxn failure hdr: -1 : error: -101
+21:45:30.604 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Committing request:: sessionid:0x3000bf2e8b00001 type:createContainer cxid:0x9 zxid:0x100000006 txntype:19 reqpath:n/a
+21:45:30.607 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x3000bf2e8b00001 type:createContainer cxid:0x9 zxid:0x100000006 txntype:19 reqpath:n/a
+21:45:30.607 [CommitProcessor:2] DEBUG org.apache.zookeeper.common.PathTrie -- nifi
+21:45:30.608 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 100000006, Digest in log and actual tree: 7194210444
+21:45:30.617 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Committing request:: sessionid:0x3000bf2e8b00001 type:createContainer cxid:0xa zxid:0x100000007 txntype:19 reqpath:n/a
+21:45:30.617 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x3000bf2e8b00001 type:createContainer cxid:0xa zxid:0x100000007 txntype:19 reqpath:n/a
+21:45:30.617 [CommitProcessor:2] DEBUG org.apache.zookeeper.common.PathTrie -- nifi
+21:45:30.618 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 100000007, Digest in log and actual tree: 8278066651
+21:45:30.627 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Committing request:: sessionid:0x3000bf2e8b00001 type:createContainer cxid:0xb zxid:0x100000008 txntype:19 reqpath:n/a
+21:45:30.628 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x3000bf2e8b00001 type:createContainer cxid:0xb zxid:0x100000008 txntype:19 reqpath:n/a
+21:45:30.628 [CommitProcessor:2] DEBUG org.apache.zookeeper.common.PathTrie -- nifi
+21:45:30.628 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 100000008, Digest in log and actual tree: 10703492069
+21:45:30.637 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Committing request:: sessionid:0x3000bf2e8b00001 type:create2 cxid:0xc zxid:0x100000009 txntype:15 reqpath:n/a
+21:45:30.637 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x3000bf2e8b00001 type:create2 cxid:0xc zxid:0x100000009 txntype:15 reqpath:n/a
+21:45:30.638 [CommitProcessor:2] DEBUG org.apache.zookeeper.common.PathTrie -- nifi
+21:45:30.638 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 100000009, Digest in log and actual tree: 13046772800
+21:46:30.620 [NIOServerCxnFactory.AcceptThread:/0.0.0.0:2181] DEBUG org.apache.zookeeper.server.NIOServerCnxnFactory -- Accepted socket connection from /10.42.1.102:39715
+21:46:30.623 [NIOWorkerThread-1] INFO org.apache.zookeeper.server.NIOServerCnxn -- Unable to read additional data from client, it probably closed the socket: address = /10.42.1.102:39715, session = 0x0
+21:46:30.624 [NIOWorkerThread-1] DEBUG org.apache.zookeeper.server.NIOServerCnxn -- Closed socket connection for client /10.42.1.102:39715 (no session established for client)
+21:46:45.345 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Committing request:: sessionid:0x1000bf2ede10000 type:createSession cxid:0x0 zxid:0x10000000a txntype:-10 reqpath:n/a
+21:46:45.345 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x1000bf2ede10000 type:createSession cxid:0x0 zxid:0x10000000a txntype:-10 reqpath:n/a
+21:46:45.345 [CommitProcessor:2] INFO org.apache.zookeeper.server.quorum.LearnerSessionTracker -- Committing global session 0x1000bf2ede10000
+21:46:45.345 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 10000000a, Digest in log and actual tree: 13046772800
+21:46:45.389 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Committing request:: sessionid:0x1000bf2ede10000 type:closeSession cxid:0x6 zxid:0x10000000b txntype:-11 reqpath:n/a
+21:46:45.390 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x1000bf2ede10000 type:closeSession cxid:0x6 zxid:0x10000000b txntype:-11 reqpath:n/a
+21:46:45.390 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 10000000b, Digest in log and actual tree: 13046772800
+21:46:45.498 [NIOServerCxnFactory.AcceptThread:/0.0.0.0:2181] DEBUG org.apache.zookeeper.server.NIOServerCnxnFactory -- Accepted socket connection from /10.42.1.102:57774
+21:46:45.501 [NIOWorkerThread-2] DEBUG org.apache.zookeeper.server.ZooKeeperServer -- Session establishment request from client /10.42.1.102:57774 client's lastZxid is 0x0
+21:46:45.503 [NIOWorkerThread-2] DEBUG org.apache.zookeeper.server.ZooKeeperServer -- Client attempting to establish new session: session = 0x2000bf2d26d0000, zxid = 0x0, timeout = 10000, address = /10.42.1.102:57774
+21:46:45.503 [FollowerRequestProcessor:2] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Processing request:: sessionid:0x2000bf2d26d0000 type:createSession cxid:0x0 zxid:0xfffffffffffffffe txntype:unknown reqpath:n/a
+21:46:45.507 [QuorumPeer[myid=2](plain=0.0.0.0:2181)(secure=disabled)] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Committing request:: sessionid:0x2000bf2d26d0000 type:createSession cxid:0x0 zxid:0x10000000c txntype:-10 reqpath:n/a
+21:46:45.508 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x2000bf2d26d0000 type:createSession cxid:0x0 zxid:0x10000000c txntype:-10 reqpath:n/a
+21:46:45.508 [CommitProcessor:2] INFO org.apache.zookeeper.server.quorum.LearnerSessionTracker -- Committing global session 0x2000bf2d26d0000
+21:46:45.508 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.DataTree -- Digests are matching for Zxid: 10000000c, Digest in log and actual tree: 13046772800
+21:46:45.508 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- sessionid:0x2000bf2d26d0000 type:createSession cxid:0x0 zxid:0x10000000c txntype:-10 reqpath:n/a
+21:46:45.511 [CommitProcessor:2] DEBUG org.apache.zookeeper.server.ZooKeeperServer -- Established session 0x2000bf2d26d0000 with negotiated timeout 10000 for client /10.42.1.102:57774
+21:46:45.515 [FollowerRequestProcessor:2] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Processing request:: sessionid:0x2000bf2d26d0000 type:getData cxid:0x1 zxid:0xfffffffffffffffe txntype:unknown reqpath:/zookeeper/config
+21:46:45.516 [CommitProcWorkThread-1] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x2000bf2d26d0000 type:getData cxid:0x1 zxid:0xfffffffffffffffe txntype:unknown reqpath:/zookeeper/config
+21:46:45.516 [CommitProcWorkThread-1] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- sessionid:0x2000bf2d26d0000 type:getData cxid:0x1 zxid:0xfffffffffffffffe txntype:unknown reqpath:/zookeeper/config
+21:46:45.518 [CommitProcWorkThread-1] DEBUG org.apache.zookeeper.server.ZooKeeperServer -- Permission requested: 1 
+21:46:45.519 [FollowerRequestProcessor:2] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Processing request:: sessionid:0x2000bf2d26d0000 type:getData cxid:0x2 zxid:0xfffffffffffffffe txntype:unknown reqpath:/zookeeper/config
+21:46:45.518 [CommitProcWorkThread-1] DEBUG org.apache.zookeeper.server.ZooKeeperServer -- ACLs for node: [1,s{'world,'anyone}
+]
+21:46:45.519 [CommitProcWorkThread-1] DEBUG org.apache.zookeeper.server.ZooKeeperServer -- Client credentials: ['ip,'10.42.1.102
+]
+21:46:45.522 [CommitProcWorkThread-1] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x2000bf2d26d0000 type:getData cxid:0x2 zxid:0xfffffffffffffffe txntype:unknown reqpath:/zookeeper/config
+21:46:45.522 [CommitProcWorkThread-1] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- sessionid:0x2000bf2d26d0000 type:getData cxid:0x2 zxid:0xfffffffffffffffe txntype:unknown reqpath:/zookeeper/config
+21:46:45.522 [CommitProcWorkThread-1] DEBUG org.apache.zookeeper.server.ZooKeeperServer -- Permission requested: 1 
+21:46:45.522 [CommitProcWorkThread-1] DEBUG org.apache.zookeeper.server.ZooKeeperServer -- ACLs for node: [1,s{'world,'anyone}
+]
+21:46:45.523 [CommitProcWorkThread-1] DEBUG org.apache.zookeeper.server.ZooKeeperServer -- Client credentials: ['ip,'10.42.1.102
+]
+21:46:48.852 [FollowerRequestProcessor:2] DEBUG org.apache.zookeeper.server.quorum.CommitProcessor -- Processing request:: sessionid:0x2000bf2d26d0000 type:ping cxid:0xfffffffffffffffe zxid:0xfffffffffffffffe txntype:unknown reqpath:n/a
+21:46:48.853 [CommitProcWorkThread-1] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- Processing request:: sessionid:0x2000bf2d26d0000 type:ping cxid:0xfffffffffffffffe zxid:0xfffffffffffffffe txntype:unknown reqpath:n/a
+21:46:48.853 [CommitProcWorkThread-1] DEBUG org.apache.zookeeper.server.FinalRequestProcessor -- sessionid:0x2000bf2d26d0000 type:ping cxid:0xfffffffffffffffe zxid:0xfffffffffffffffe txntype:unknown reqpath:n/a

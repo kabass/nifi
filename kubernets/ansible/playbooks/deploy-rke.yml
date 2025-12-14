@@ -1,0 +1,99 @@
+---
+- name: Déployer RKE sur le cluster Kubernetes
+  hosts: localhost
+  become: false
+  vars:
+    rke_binary: "{{ playbook_dir }}/../bin/rke"
+    cluster_config: "{{ playbook_dir }}/../cluster.yml"
+    kubeconfig_path: "{{ playbook_dir }}/../kube_config_cluster.yml"
+    rke_version: "v1.8.6"
+    ansible_dir: "{{ playbook_dir }}/.."
+    ssh_key_path: "{{ ansible_dir }}/../vmkey"
+
+  tasks:
+    - name: Vérifier si RKE est installé
+      command: "{{ rke_binary }} --version"
+      register: rke_version_check
+      changed_when: false
+      failed_when: false
+
+    - name: Déterminer le système d'exploitation
+      set_fact:
+        os_type: "{{ 'linux' if ansible_system == 'Linux' else 'darwin' if ansible_system == 'Darwin' else 'windows' }}"
+
+    - name: Créer le répertoire bin si nécessaire
+      file:
+        path: "{{ playbook_dir }}/../bin"
+        state: directory
+        mode: '0755'
+
+    - name: Télécharger RKE
+      get_url:
+        url: "https://github.com/rancher/rke/releases/download/{{ rke_version }}/rke_{{ os_type }}-amd64"
+        dest: "{{ rke_binary }}"
+        mode: '0755'
+      when: rke_version_check.rc != 0
+
+    - name: Vérifier l'installation de RKE
+      command: "{{ rke_binary }} --version"
+      register: rke_final_check
+      changed_when: false
+
+    - name: Afficher la version de RKE
+      debug:
+        msg: "RKE {{ rke_final_check.stdout }} installé avec succès"
+
+    - name: Vérifier que le fichier cluster.yml existe
+      stat:
+        path: "{{ cluster_config }}"
+      register: cluster_config_stat
+
+    - name: Avertir si cluster.yml n'existe pas
+      debug:
+        msg: "Le fichier cluster.yml doit être créé avant de déployer RKE"
+      when: not cluster_config_stat.stat.exists
+
+    - name: Vérifier que la clé SSH existe
+      stat:
+        path: "{{ ssh_key_path }}"
+      register: ssh_key_stat
+      when: cluster_config_stat.stat.exists
+
+    - name: Avertir si la clé SSH n'existe pas
+      debug:
+        msg: "La clé SSH {{ ssh_key_path }} n'existe pas. Vérifiez le chemin."
+      when:
+        - cluster_config_stat.stat.exists
+        - not ssh_key_stat.stat.exists
+
+    - name: Déployer le cluster RKE
+      command: "{{ rke_binary }} up --config {{ cluster_config | basename }}"
+      register: rke_deploy
+      when: 
+        - cluster_config_stat.stat.exists
+        - ssh_key_stat.stat.exists | default(true)
+      args:
+        chdir: "{{ ansible_dir }}"
+      environment:
+        ANSIBLE_HOST_KEY_CHECKING: "False"
+
+    - name: Afficher le résultat du déploiement
+      debug:
+        var: rke_deploy.stdout_lines
+      when:
+        - cluster_config_stat.stat.exists
+        - rke_deploy.changed
+
+    - name: Vérifier le statut du cluster
+      command: "{{ rke_binary }} version --config {{ cluster_config | basename }}"
+      register: cluster_status
+      changed_when: false
+      when: cluster_config_stat.stat.exists
+      args:
+        chdir: "{{ ansible_dir }}"
+
+    - name: Afficher le statut du cluster
+      debug:
+        var: cluster_status.stdout_lines
+      when: cluster_config_stat.stat.exists
+

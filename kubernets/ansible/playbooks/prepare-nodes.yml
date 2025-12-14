@@ -1,0 +1,252 @@
+---
+- name: Préparer les nœuds pour RKE
+  hosts: kubernetes
+  become: true
+  tasks:
+    - name: Mettre à jour le cache des packages (Debian/Ubuntu)
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+      ignore_errors: yes
+
+    - name: Mettre à jour le cache des packages (RHEL/CentOS)
+      yum:
+        update_cache: yes
+      when: ansible_os_family == "RedHat"
+      ignore_errors: yes
+
+    - name: Installer les packages requis
+      package:
+        name: "{{ required_packages | default(['curl', 'wget', 'git', 'vim', 'net-tools', 'openssh-server']) }}"
+        state: present
+
+    - name: Désactiver le swap
+      shell: swapoff -a
+      ignore_errors: yes
+
+    - name: Commenter les entrées swap dans /etc/fstab
+      replace:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+)'
+        replace: '#\1'
+      when: disable_swap | default(true)
+
+    - name: Activer le forwarding IP
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        state: present
+        sysctl_set: yes
+        reload: yes
+      when: enable_ip_forwarding | default(true)
+
+    - name: Activer le bridge netfilter
+      sysctl:
+        name: "{{ item }}"
+        value: '1'
+        state: present
+        sysctl_set: yes
+        reload: yes
+      loop:
+        - net.bridge.bridge-nf-call-iptables
+        - net.bridge.bridge-nf-call-ip6tables
+      ignore_errors: yes
+
+    - name: Charger les modules kernel requis
+      modprobe:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - overlay
+        - br_netfilter
+      ignore_errors: yes
+
+    - name: Rendre les modules kernel persistants
+      lineinfile:
+        path: /etc/modules-load.d/k8s.conf
+        line: "{{ item }}"
+        create: yes
+      loop:
+        - overlay
+        - br_netfilter
+
+    - name: Vérifier si Docker est installé
+      command: docker --version
+      register: docker_version_check
+      changed_when: false
+      failed_when: false
+
+    - name: Installer Docker (Debian/Ubuntu)
+      block:
+        - name: Ajouter la clé GPG Docker
+          apt_key:
+            url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
+            state: present
+
+        - name: Ajouter le dépôt Docker
+          apt_repository:
+            repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+            state: present
+
+        - name: Installer Docker
+          apt:
+            name:
+              - docker-ce
+              - docker-ce-cli
+              - containerd.io
+              - docker-buildx-plugin
+              - docker-compose-plugin
+            state: present
+            update_cache: yes
+
+        - name: Vérifier la version de Docker installée
+          command: docker version --format '{{.Server.APIVersion}}'
+          register: docker_api_version
+          changed_when: false
+          failed_when: false
+
+        - name: Avertir si Docker API est trop récent pour RKE
+          debug:
+            msg: "Docker API version {{ docker_api_version.stdout }} détectée. RKE v1.8.8 nécessite API 1.41. Si des erreurs surviennent, installez Docker 23.0.x manuellement."
+          when: docker_api_version.rc == 0 and docker_api_version.stdout | version_compare('1.44', '>=')
+
+        - name: Démarrer et activer Docker
+          systemd:
+            name: docker
+            enabled: yes
+            state: started
+
+        - name: Ajouter l'utilisateur root au groupe docker
+          user:
+            name: root
+            groups: docker
+            append: yes
+      when:
+        - ansible_os_family == "Debian"
+        - docker_version_check.rc != 0
+
+    - name: Installer Docker (RHEL/CentOS)
+      block:
+        - name: Installer les dépendances
+          yum:
+            name:
+              - yum-utils
+              - device-mapper-persistent-data
+              - lvm2
+            state: present
+
+        - name: Ajouter le dépôt Docker
+          yum_repository:
+            name: docker-ce
+            description: Docker CE Repository
+            baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+            gpgcheck: yes
+            gpgkey: https://download.docker.com/linux/centos/gpg
+            enabled: yes
+
+        - name: Installer Docker version compatible (23.0.x)
+          yum:
+            name:
+              - "docker-ce-{{ docker_version | default('23.0') }}*"
+              - "docker-ce-cli-{{ docker_version | default('23.0') }}*"
+              - containerd.io
+            state: present
+            allow_downgrade: yes
+
+        - name: Démarrer et activer Docker
+          systemd:
+            name: docker
+            enabled: yes
+            state: started
+
+        - name: Ajouter l'utilisateur root au groupe docker
+          user:
+            name: root
+            groups: docker
+            append: yes
+      when:
+        - ansible_os_family == "RedHat"
+        - docker_version_check.rc != 0
+
+    - name: Vérifier que Docker est installé et le service existe
+      systemd:
+        name: docker
+      register: docker_service_check
+      changed_when: false
+      failed_when: false
+
+    - name: Vérifier que la commande docker est disponible
+      command: docker --version
+      register: docker_cmd_check
+      changed_when: false
+      failed_when: false
+
+    - name: Créer le répertoire /etc/docker si nécessaire
+      file:
+        path: /etc/docker
+        state: directory
+        mode: '0755'
+      when: docker_service_check.status is defined or docker_cmd_check.rc == 0
+
+    - name: Configurer Docker daemon
+      copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {
+            "exec-opts": ["native.cgroupdriver=systemd"],
+            "log-driver": "json-file",
+            "log-opts": {
+              "max-size": "100m"
+            },
+            "storage-driver": "overlay2"
+          }
+        mode: '0644'
+      when: docker_service_check.status is defined or docker_cmd_check.rc == 0
+
+    - name: Recharger la configuration systemd
+      systemd:
+        daemon_reload: yes
+      when: docker_service_check.status is defined
+
+    - name: Redémarrer Docker pour appliquer la configuration
+      systemd:
+        name: docker
+        state: restarted
+      when: docker_service_check.status is defined
+      ignore_errors: yes
+      register: docker_restart_result
+
+    - name: Démarrer Docker si le redémarrage a échoué
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+      when: 
+        - docker_service_check.status is defined
+        - docker_restart_result is failed or docker_restart_result.failed | default(false)
+      ignore_errors: yes
+
+    - name: Vérifier que Docker fonctionne après configuration
+      command: docker info
+      register: docker_info_check
+      changed_when: false
+      failed_when: false
+      when: docker_cmd_check.rc == 0
+
+    - name: Afficher un avertissement si Docker ne fonctionne pas
+      debug:
+        msg: "Attention: Docker pourrait nécessiter une intervention manuelle. Vérifiez les logs avec 'journalctl -xeu docker.service'"
+      when:
+        - docker_cmd_check.rc == 0
+        - docker_info_check.rc != 0
+
+    - name: Vérifier l'installation de Docker
+      command: docker --version
+      register: docker_final_check
+      changed_when: false
+
+    - name: Afficher la version de Docker installée
+      debug:
+        msg: "Docker {{ docker_final_check.stdout }} installé avec succès"
+

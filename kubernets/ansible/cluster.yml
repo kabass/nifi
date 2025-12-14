@@ -1,0 +1,142 @@
+---
+# Configuration RKE pour le cluster Kubernetes
+# Documentation: https://rancher.com/docs/rke/latest/en/config-options/
+
+nodes:
+  - address: 65.109.229.12
+    user: root
+    role:
+      - controlplane
+      - etcd
+      - worker
+    ssh_key_path: ../vmkey
+
+  - address: 37.27.253.78
+    user: root
+    role:
+      - controlplane
+      - etcd
+      - worker
+    ssh_key_path: ../vmkey
+
+  - address: 77.42.23.65
+    user: root
+    role:
+      - controlplane
+      - etcd
+      - worker
+    ssh_key_path: ../vmkey
+
+# Version de Kubernetes
+# RKE v1.8.8 supporte: v1.30.14-rancher1-1, v1.31.13-rancher1-1, v1.32.9-rancher1-1
+# Note: Ces versions nécessitent un abonnement RKE Extended Life
+# Utilisation d'une version plus ancienne avec images publiques disponibles
+kubernetes_version: "v1.30.14-rancher1-1"
+
+# Configuration des images système (images compatibles avec Kubernetes v1.30.14-rancher1-1)
+system_images:
+  kubernetes: rancher/hyperkube:v1.30.14-rancher1
+  etcd: rancher/coreos-etcd:v3.4.16-rancher1
+  alpine: rancher/rke-tools:v0.1.114
+  nginx_proxy: rancher/rke-tools:v0.1.114
+  cert_downloader: rancher/rke-tools:v0.1.114
+  kubernetes_services_sidecar: rancher/rke-tools:v0.1.114
+  kubedns: rancher/mirrored-k8s-dns-kube-dns:1.22.28
+  dnsmasq: rancher/mirrored-k8s-dns-dnsmasq-nanny:1.22.28
+  kubedns_sidecar: rancher/mirrored-k8s-dns-sidecar:1.22.28
+  kubedns_autoscaler: rancher/mirrored-cluster-proportional-autoscaler:v1.9.0
+  coredns: rancher/mirrored-coredns-coredns:1.11.1
+  coredns_autoscaler: rancher/mirrored-cluster-proportional-autoscaler:v1.9.0
+  pod_infra_container: rancher/mirrored-pause:3.10
+  flannel: rancher/mirrored-coreos-flannel:v0.15.1
+  flannel_cni: rancher/flannel-cni:v0.3.0-rancher6
+  calico_node: rancher/mirrored-calico-node:v3.28.0
+  calico_cni: rancher/mirrored-calico-cni:v3.28.0
+  calico_controllers: rancher/mirrored-calico-kube-controllers:v3.28.0
+  calico_ctl: rancher/mirrored-calico-ctl:v3.28.0
+  calico_flexvol: rancher/mirrored-calico-pod2daemon-flexvol:v3.28.0
+  canal_node: rancher/mirrored-calico-node:v3.28.0
+  canal_cni: rancher/mirrored-calico-cni:v3.28.0
+  canal_controllers: rancher/mirrored-calico-kube-controllers:v3.28.0
+  canal_flannel: rancher/mirrored-coreos-flannel:v0.15.1
+  canal_flexvol: rancher/mirrored-calico-pod2daemon-flexvol:v3.28.0
+  weave_node: weaveworks/weave-kube:2.8.1
+  weave_cni: weaveworks/weave-npc:2.8.1
+  ingress: rancher/nginx-ingress-controller:nginx-1.9.4-rancher1
+  ingress_backend: rancher/mirrored-nginx-ingress-controller-defaultbackend:1.5-rancher1
+  ingress_webhook: rancher/mirrored-ingress-nginx-kube-webhook-certgen:v1.6.5
+  metrics_server: rancher/mirrored-metrics-server:v0.7.0
+  windows_pod_infra_container: rancher/mirrored-pause:3.10
+
+# Configuration du réseau
+network:
+  plugin: canal
+  options:
+    canal_flannel_backend_type: vxlan
+
+# Configuration des services
+services:
+  etcd:
+    snapshot: true
+    creation: 6h
+    retention: 24h
+  kube-api:
+    service_cluster_ip_range: 10.43.0.0/16
+    service_node_port_range: "30000-32767"
+    pod_security_policy: false
+    always_pull_images: false
+  kube-controller:
+    cluster_cidr: 10.42.0.0/16
+    service_cluster_ip_range: 10.43.0.0/16
+  kubelet:
+    cluster_domain: cluster.local
+    cluster_dns_server: 10.43.0.10
+    fail_swap_on: false
+  kubeproxy:
+    extra_args:
+      proxy-mode: iptables
+
+# Configuration des addons
+addons: |
+  ---
+  apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: kube-system
+  ---
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: default
+    namespace: kube-system
+
+# Configuration de l'authentification
+authentication:
+  strategy: x509
+  sans:
+    - "65.109.229.12"
+    - "37.27.253.78"
+    - "77.42.23.65"
+
+# Configuration du registre (optionnel)
+# private_registries:
+#   - url: registry.example.com
+#     user: username
+#     password: password
+#     is_default: true
+
+# Configuration du bastion host (optionnel)
+# bastion_host:
+#   address: bastion.example.com
+#   user: root
+#   port: 22
+#   ssh_key_path: ~/.ssh/id_rsa
+
+# Options de monitoring (optionnel)
+# monitoring:
+#   provider: metrics-server
+
+# Options de logging (optionnel)
+# log:
+#   level: info
+

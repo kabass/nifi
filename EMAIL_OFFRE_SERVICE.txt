@@ -1,0 +1,29 @@
+Objet : Proposition d'offre - Mise en place Dataplateforme Kubernetes On-Premise
+
+Madame, Monsieur,
+
+Je me permets de vous adresser la présente proposition d'offre concernant la mise en place d'une dataplateforme moderne et scalable sur infrastructure Kubernetes on-premise pour la CBAO.
+
+Cette proposition détaille :
+- L'architecture de référence de la plateforme
+- Les prestations proposées (32 jours-hommes)
+- La planification sur 12 semaines
+- Le chiffrage détaillé
+- Les modalités d'intervention
+- Mon profil et mon expérience
+
+Vous trouverez en pièces jointes :
+- La proposition d'offre complète
+- Mon curriculum vitae
+
+Je reste à votre disposition pour toute question ou pour organiser un échange afin de présenter cette proposition et répondre à vos interrogations.
+
+Dans l'attente de votre retour, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
+
+Bassirou KA
+Consultant Data Ops
+Tecsen France / Back Consulting Sénégal
+
+Email : ka.bassirou@gmail.com
+Téléphone : +33 6 34 24 79 25
+

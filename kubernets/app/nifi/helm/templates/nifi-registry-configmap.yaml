@@ -1,0 +1,55 @@
+{{- if .Values.nifiRegistry.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nifi-platform.fullname" . }}-nifi-registry-config
+  labels:
+    {{- include "nifi-platform.nifiRegistry.labels" . | nindent 4 }}
+data:
+  nifi-registry.properties: |
+    # Web Properties
+    nifi.registry.web.http.port={{ .Values.nifiRegistry.properties.nifi.registry.web.http.port }}
+    nifi.registry.web.https.port={{ .Values.nifiRegistry.properties.nifi.registry.web.https.port }}
+    nifi.registry.web.https.host={{ .Values.nifiRegistry.properties.nifi.registry.web.https.host }}
+    nifi.registry.web.war.directory=./lib
+    nifi.registry.web.jetty.working.directory=./work/jetty
+    nifi.registry.web.jetty.threads=200
+    # Security
+    nifi.registry.security.keystore=./conf/keystore.p12
+    nifi.registry.security.keystoreType=PKCS12
+    nifi.registry.security.keystorePasswd=
+    nifi.registry.security.keyPasswd=
+    nifi.registry.security.truststore=./conf/truststore.p12
+    nifi.registry.security.truststoreType=PKCS12
+    nifi.registry.security.truststorePasswd=
+    nifi.registry.security.needClientAuth=true
+    nifi.registry.security.user.authorizer={{ if .Values.nifiRegistry.keycloak.enabled }}managed-authorizer{{ else }}file-user-group-provider{{ end }}
+    nifi.registry.security.user.login.identity.provider={{ if .Values.nifiRegistry.keycloak.enabled }}keycloak-provider{{ else }}file-identity-provider{{ end }}
+    nifi.registry.security.allow.anonymous.authentication=false
+    {{- if .Values.nifiRegistry.keycloak.enabled }}
+    nifi.registry.security.user.oidc.discovery.url={{ .Values.nifiRegistry.keycloak.url }}/realms/{{ .Values.nifiRegistry.keycloak.realm }}
+    nifi.registry.security.user.oidc.client.id={{ .Values.nifiRegistry.keycloak.clientId }}
+    nifi.registry.security.user.oidc.client.secret={{ .Values.nifiRegistry.keycloak.clientSecret }}
+    nifi.registry.security.user.oidc.scope={{ .Values.nifiRegistry.properties.nifi.registry.security.user.oidc.scope }}
+    nifi.registry.security.user.oidc.claim.identifying.user={{ .Values.nifiRegistry.properties.nifi.registry.security.user.oidc.claim.identifying.user }}
+    nifi.registry.security.user.oidc.fallback.claims.identifying.user={{ .Values.nifiRegistry.properties.nifi.registry.security.user.oidc.fallback.claims.identifying.user }}
+    {{- end }}
+    # Database Properties
+    {{- if eq .Values.nifiRegistry.database.type "postgresql" }}
+    nifi.registry.db.url=jdbc:postgresql://{{ .Values.nifiRegistry.database.postgresql.host }}:{{ .Values.nifiRegistry.database.postgresql.port }}/{{ .Values.nifiRegistry.database.postgresql.database }}?ssl={{ .Values.nifiRegistry.database.postgresql.ssl }}
+    nifi.registry.db.driverClass=org.postgresql.Driver
+    nifi.registry.db.username={{ .Values.nifiRegistry.database.postgresql.username }}
+    nifi.registry.db.password={{ .Values.nifiRegistry.database.postgresql.password }}
+    {{- else }}
+    nifi.registry.db.url=jdbc:h2:file:{{ .Values.nifiRegistry.database.h2.dataDir }}/nifi-registry;AUTOCOMMIT=OFF;DB_CLOSE_ON_EXIT=FALSE;LOCK_MODE=3;LOCK_TIMEOUT=10000;WRITE_DELAY=100;AUTO_SERVER=TRUE
+    nifi.registry.db.driverClass=org.h2.Driver
+    nifi.registry.db.username=registry
+    nifi.registry.db.password=registry
+    {{- end }}
+    nifi.registry.db.maxConnections={{ .Values.nifiRegistry.properties.nifi.registry.db.maxConnections }}
+    nifi.registry.db.maxWaitMillis=5000
+    # Storage
+    nifi.registry.storage.provider=fileSystem
+    nifi.registry.storage.directory=./flow_storage
+{{- end }}
+

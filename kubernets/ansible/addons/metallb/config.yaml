@@ -1,0 +1,24 @@
+---
+# Configuration MetalLB - Pool d'adresses IP
+# Modifiez la plage d'adresses selon votre réseau
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: default-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  # Plage d'adresses IP privées pour MetalLB (réseau 10.0.0.0/16)
+  # Les nœuds utilisent 10.0.0.2-10.0.0.4, cette plage est libre
+  # Les services LoadBalancer seront accessibles sur le réseau privé
+  - 10.0.0.240-10.0.0.250
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: default
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - default-pool
+

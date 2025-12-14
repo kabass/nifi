@@ -1,0 +1,24 @@
+# Fichiers de configuration sensibles
+kube_config_cluster.yml
+*.pem
+*.key
+*.crt
+
+# Fichiers temporaires
+*.retry
+.DS_Store
+
+# Fichiers de logs
+*.log
+
+# Fichiers de backup RKE
+cluster.rkestate
+
+# Binaires RKE
+bin/
+
+# Manifests téléchargés des addons
+addons/*/*.yaml
+!addons/*/namespace.yaml
+!addons/*/config.yaml
+
