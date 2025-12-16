@@ -8,13 +8,19 @@ metadata:
 data:
   nifi-registry.properties: |
     # Web Properties
-    nifi.registry.web.http.port={{ .Values.nifiRegistry.properties.nifi.registry.web.http.port }}
+    {{- if .Values.nifiRegistry.security.ssl.enabled }}
+    # HTTPS only (SSL enabled)
     nifi.registry.web.https.port={{ .Values.nifiRegistry.properties.nifi.registry.web.https.port }}
     nifi.registry.web.https.host={{ .Values.nifiRegistry.properties.nifi.registry.web.https.host }}
+    {{- else }}
+    # HTTP only (SSL disabled)
+    nifi.registry.web.http.port={{ .Values.nifiRegistry.properties.nifi.registry.web.http.port }}
+    {{- end }}
     nifi.registry.web.war.directory=./lib
     nifi.registry.web.jetty.working.directory=./work/jetty
     nifi.registry.web.jetty.threads=200
     # Security
+    {{- if .Values.nifiRegistry.security.ssl.enabled }}
     nifi.registry.security.keystore=./conf/keystore.p12
     nifi.registry.security.keystoreType=PKCS12
     nifi.registry.security.keystorePasswd=
@@ -23,6 +29,7 @@ data:
     nifi.registry.security.truststoreType=PKCS12
     nifi.registry.security.truststorePasswd=
     nifi.registry.security.needClientAuth=true
+    {{- end }}
     nifi.registry.security.user.authorizer={{ if .Values.nifiRegistry.keycloak.enabled }}managed-authorizer{{ else }}file-user-group-provider{{ end }}
     nifi.registry.security.user.login.identity.provider={{ if .Values.nifiRegistry.keycloak.enabled }}keycloak-provider{{ else }}file-identity-provider{{ end }}
     nifi.registry.security.allow.anonymous.authentication=false

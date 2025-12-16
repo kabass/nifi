@@ -32,6 +32,202 @@ spec:
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+      - name: copy-config
+        image: "{{ .Values.nifiRegistry.image.repository }}:{{ .Values.nifiRegistry.image.tag }}"
+        imagePullPolicy: {{ .Values.nifiRegistry.image.pullPolicy }}
+        command:
+        - sh
+        - -c
+        - |
+          echo "Copying configuration files..."
+          
+          # Ensure target directory exists
+          mkdir -p /conf
+          
+          # First, copy default configuration files from image to writable volume
+          if [ -d /opt/nifi-registry/nifi-registry-current/conf ]; then
+            echo "Copying default configuration files from NiFi Registry image..."
+            cp -r /opt/nifi-registry/nifi-registry-current/conf/* /conf/ 2>/dev/null || true
+            echo "Default configuration files copied"
+            ls -la /conf/ | head -10
+          else
+            echo "WARNING: Default conf directory not found in image, will use ConfigMap only"
+          fi
+          ls -la /conf-source
+          # Then, copy/merge ConfigMap content (this will override defaults)
+          # ConfigMaps create symlinks, so we need to dereference them properly
+          if [ -d /conf-source ]; then
+            echo "Merging ConfigMap configuration..."
+            echo "Contents of /conf-source:"
+            ls -la /conf-source/
+            
+            # Copy files from ConfigMap, dereferencing symlinks
+            # For each file in ConfigMap, copy its actual content (not the symlink)
+            for item in /conf-source/*; do
+              if [ -e "$item" ]; then
+                filename=$(basename "$item")
+                echo "Processing: $filename"
+                
+                # If it's nifi-registry.properties, handle it specially to ensure it's a regular file
+                if [ "$filename" = "nifi-registry.properties" ]; then
+                  echo "Copying nifi-registry.properties (dereferencing symlink)..."
+                  # Use cat to read actual content (dereferences symlink automatically)
+                  cat "$item" > /conf/nifi-registry.properties 2>/dev/null || {
+                    echo "ERROR: Failed to copy nifi-registry.properties"
+                    exit 1
+                  }
+                else
+                  # For other files, use cp -L to dereference symlinks
+                  cp -L "$item" "/conf/$filename" 2>/dev/null || cp "$item" "/conf/$filename" 2>/dev/null || true
+                fi
+              fi
+            done
+            echo "Configuration files merged successfully"
+          else
+            echo "WARNING: Source configuration directory (ConfigMap) not found"
+          fi
+          
+          # Verify nifi-registry.properties exists and is a regular file (not a symlink)
+          if [ ! -f /conf/nifi-registry.properties ]; then
+            echo "ERROR: nifi-registry.properties does not exist after copy"
+            ls -la /conf/
+            exit 1
+          fi
+          
+          if [ -L /conf/nifi-registry.properties ]; then
+            echo "ERROR: nifi-registry.properties is still a symlink, dereferencing..."
+            cat /conf/nifi-registry.properties > /conf/nifi-registry.properties.tmp && \
+            mv /conf/nifi-registry.properties.tmp /conf/nifi-registry.properties || {
+              echo "ERROR: Failed to dereference symlink"
+              exit 1
+            }
+          fi
+          
+          echo "Verifying nifi-registry.properties:"
+          ls -la /conf/nifi-registry.properties
+          file /conf/nifi-registry.properties || true
+          
+          # Ensure proper permissions
+          chown -R 1000:1000 /conf/ 2>/dev/null || true
+          chmod -R 755 /conf/ 2>/dev/null || true
+          chmod 644 /conf/nifi-registry.properties 2>/dev/null || true
+          
+          echo "Final configuration files:"
+          ls -la /conf/
+          cat /conf/nifi-registry.properties
+        volumeMounts:
+        - name: conf-source
+          mountPath: /conf-source
+        - name: conf
+          mountPath: /conf
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          allowPrivilegeEscalation: false
+      - name: update-config
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - |
+          echo "Updating nifi-registry.properties with environment variables..."
+          CONFIG_FILE="/conf/nifi-registry.properties"
+          
+          # Ensure the config file exists
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "WARNING: Config file does not exist, creating it..."
+            ls /
+            touch "$CONFIG_FILE"
+            chmod 644 "$CONFIG_FILE"
+          fi
+          
+          # Verify file exists before proceeding
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "ERROR: Cannot create or find config file at $CONFIG_FILE"
+            ls -la /conf/
+            exit 1
+          fi
+          
+          echo "Config file exists: $CONFIG_FILE"
+          ls -la "$CONFIG_FILE"
+          
+          # Update database configuration from environment variables if they exist
+          {{- if eq .Values.nifiRegistry.database.type "postgresql" }}
+          if [ -n "$NIFI_REGISTRY_DB_URL" ]; then
+            sed -i "s|^nifi.registry.db.url=.*|nifi.registry.db.url=${NIFI_REGISTRY_DB_URL}|g" "$CONFIG_FILE" || true
+          fi
+          if [ -n "$NIFI_REGISTRY_DB_DRIVER_CLASS" ]; then
+            sed -i "s|^nifi.registry.db.driverClass=.*|nifi.registry.db.driverClass=${NIFI_REGISTRY_DB_DRIVER_CLASS}|g" "$CONFIG_FILE" || true
+          fi
+          if [ -n "$NIFI_REGISTRY_DB_USERNAME" ]; then
+            sed -i "s|^nifi.registry.db.username=.*|nifi.registry.db.username=${NIFI_REGISTRY_DB_USERNAME}|g" "$CONFIG_FILE" || true
+          fi
+          if [ -n "$NIFI_REGISTRY_DB_PASSWORD" ]; then
+            sed -i "s|^nifi.registry.db.password=.*|nifi.registry.db.password=${NIFI_REGISTRY_DB_PASSWORD}|g" "$CONFIG_FILE" || true
+          fi
+          {{- end }}
+          
+          # Update Keycloak configuration from environment variables if they exist
+          {{- if .Values.nifiRegistry.keycloak.enabled }}
+          if [ -n "$NIFI_REGISTRY_SECURITY_USER_OIDC_DISCOVERY_URL" ]; then
+            sed -i "s|^nifi.registry.security.user.oidc.discovery.url=.*|nifi.registry.security.user.oidc.discovery.url=${NIFI_REGISTRY_SECURITY_USER_OIDC_DISCOVERY_URL}|g" "$CONFIG_FILE" || true
+          fi
+          if [ -n "$NIFI_REGISTRY_SECURITY_USER_OIDC_CLIENT_ID" ]; then
+            sed -i "s|^nifi.registry.security.user.oidc.client.id=.*|nifi.registry.security.user.oidc.client.id=${NIFI_REGISTRY_SECURITY_USER_OIDC_CLIENT_ID}|g" "$CONFIG_FILE" || true
+          fi
+          if [ -n "$NIFI_REGISTRY_SECURITY_USER_OIDC_CLIENT_SECRET" ]; then
+            sed -i "s|^nifi.registry.security.user.oidc.client.secret=.*|nifi.registry.security.user.oidc.client.secret=${NIFI_REGISTRY_SECURITY_USER_OIDC_CLIENT_SECRET}|g" "$CONFIG_FILE" || true
+          fi
+          {{- end }}
+          
+          echo "Configuration updated successfully"
+          echo "--- Updated nifi-registry.properties (relevant sections) ---"
+          grep -E "^(nifi.registry.db|nifi.registry.security.user.oidc)" "$CONFIG_FILE" || true
+          echo "-----------------------------------------------------------"
+        env:
+        {{- if eq .Values.nifiRegistry.database.type "postgresql" }}
+        - name: NIFI_REGISTRY_DB_URL
+          value: "jdbc:postgresql://{{ .Values.nifiRegistry.database.postgresql.host }}:{{ .Values.nifiRegistry.database.postgresql.port }}/{{ .Values.nifiRegistry.database.postgresql.database }}?ssl={{ .Values.nifiRegistry.database.postgresql.ssl }}"
+        - name: NIFI_REGISTRY_DB_DRIVER_CLASS
+          value: "org.postgresql.Driver"
+        - name: NIFI_REGISTRY_DB_USERNAME
+          value: "{{ .Values.nifiRegistry.database.postgresql.username }}"
+        {{- if .Values.secrets.database.create }}
+        - name: NIFI_REGISTRY_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "nifi-platform.fullname" . }}-database
+              key: postgresql-password
+        {{- else }}
+        - name: NIFI_REGISTRY_DB_PASSWORD
+          value: "{{ .Values.nifiRegistry.database.postgresql.password }}"
+        {{- end }}
+        {{- end }}
+        {{- if .Values.nifiRegistry.keycloak.enabled }}
+        - name: NIFI_REGISTRY_SECURITY_USER_OIDC_DISCOVERY_URL
+          value: "{{ .Values.nifiRegistry.keycloak.url }}/realms/{{ .Values.nifiRegistry.keycloak.realm }}"
+        - name: NIFI_REGISTRY_SECURITY_USER_OIDC_CLIENT_ID
+          value: "{{ .Values.nifiRegistry.keycloak.clientId }}"
+        {{- if .Values.secrets.keycloak.create }}
+        - name: NIFI_REGISTRY_SECURITY_USER_OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "nifi-platform.fullname" . }}-keycloak
+              key: nifi-registry-client-secret
+        {{- else }}
+        - name: NIFI_REGISTRY_SECURITY_USER_OIDC_CLIENT_SECRET
+          value: "{{ .Values.nifiRegistry.keycloak.clientSecret }}"
+        {{- end }}
+        {{- end }}
+        volumeMounts:
+        - name: conf-source
+          mountPath: /conf-source
+        - name: conf
+          mountPath: /conf
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
       containers:
       - name: nifi-registry
         image: "{{ .Values.nifiRegistry.image.repository }}:{{ .Values.nifiRegistry.image.tag }}"
@@ -112,9 +308,11 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
       volumes:
-      - name: conf
+      - name: conf-source
         configMap:
           name: {{ include "nifi-platform.fullname" . }}-nifi-registry-config
+      - name: conf
+        emptyDir: {}
       - name: flow-storage
         persistentVolumeClaim:
           claimName: {{ include "nifi-platform.fullname" . }}-nifi-registry-flow-storage
