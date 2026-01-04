@@ -1,0 +1,53 @@
+{{- if .Values.nifi.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nifi-platform.fullname" . }}-nifi-entrypoint
+  # Note: This ConfigMap contains the update-config.sh script used by init container
+  labels:
+    {{- include "nifi-platform.nifi.labels" . | nindent 4 }}
+data:
+  update-config.sh: |
+    #!/bin/bash
+    set -e
+    
+    SOURCE_CONFIG="/conf-source/nifi.properties"
+    TARGET_CONFIG="/conf/nifi.properties"
+    
+    echo "Starting Nifi configuration update script..."
+    
+    # Get pod information from environment or hostname
+    POD_NAME="${POD_NAME:-$(hostname)}"
+    POD_NAMESPACE="${POD_NAMESPACE:-default}"
+    SERVICE_NAME="{{ include "nifi-platform.fullname" . }}-nifi-headless"
+    
+    # Calculate cluster node address using headless service DNS
+    # Format: <pod-name>.<headless-service>.<namespace>.svc.cluster.local
+    CLUSTER_NODE_ADDRESS="${POD_NAME}.${SERVICE_NAME}.${POD_NAMESPACE}.svc.cluster.local"
+    REMOTE_INPUT_HOST="${CLUSTER_NODE_ADDRESS}"
+    
+    echo "Pod Name: $POD_NAME"
+    echo "Pod Namespace: $POD_NAMESPACE"
+    echo "Cluster Node Address: $CLUSTER_NODE_ADDRESS"
+    
+    # Copy source config to target and update it
+    if [ -f "$SOURCE_CONFIG" ]; then
+      echo "Copying and updating nifi.properties..."
+      cp "$SOURCE_CONFIG" "$TARGET_CONFIG"
+      
+      # Replace cluster node address
+      sed -i "s|nifi.cluster.node.address=.*|nifi.cluster.node.address=${CLUSTER_NODE_ADDRESS}|g" "$TARGET_CONFIG"
+      
+      # Replace remote input host
+      sed -i "s|nifi.remote.input.host=.*|nifi.remote.input.host=${REMOTE_INPUT_HOST}|g" "$TARGET_CONFIG"
+      
+      echo "Configuration updated successfully"
+      echo "--- Updated nifi.properties (relevant sections) ---"
+      grep -E "^(nifi.cluster.node.address|nifi.remote.input.host|nifi.zookeeper.connect.string)=" "$TARGET_CONFIG" || true
+      echo "---------------------------------------------------"
+    else
+      echo "ERROR: Source configuration file not found at $SOURCE_CONFIG"
+      exit 1
+    fi
+{{- end }}
+

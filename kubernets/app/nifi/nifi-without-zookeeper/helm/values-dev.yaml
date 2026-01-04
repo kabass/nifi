@@ -1,0 +1,45 @@
+# Values file for development environment
+
+nifi:
+  enabled: true
+  cluster:
+    nodeCount: 1  # Single node for dev
+    zookeeper:
+      enabled: true
+      replicas: 1  # Single ZooKeeper for dev
+      resources:
+        requests:
+          cpu: 200m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+  storage:
+    size: 20Gi
+  keycloak:
+    enabled: false  # Disable Keycloak in dev for simplicity
+
+nifiRegistry:
+  enabled: true
+  replicas: 1
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+  storage:
+    size: 10Gi
+  database:
+    type: h2  # Use H2 for dev
+  keycloak:
+    enabled: false  # Disable Keycloak in dev
+

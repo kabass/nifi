@@ -21,6 +21,19 @@
         name: "{{ required_packages | default(['curl', 'wget', 'git', 'vim', 'net-tools', 'openssh-server']) }}"
         state: present
 
+    - name: Configurer le hostname pour correspondre à l'adresse IP
+      hostname:
+        name: "{{ ansible_host }}"
+      when: ansible_host is defined
+      
+    - name: Ajouter le hostname dans /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ ansible_host }} {{ ansible_host }}"
+        regexp: "^{{ ansible_host }}"
+        state: present
+      when: ansible_host is defined
+
     - name: Désactiver le swap
       shell: swapoff -a
       ignore_errors: yes
@@ -77,6 +90,18 @@
       changed_when: false
       failed_when: false
 
+    - name: Vérifier la version API Docker si installé
+      command: docker version --format '{% raw %}{{.Server.APIVersion}}{% endraw %}'
+      register: docker_api_check
+      changed_when: false
+      failed_when: false
+      when: docker_version_check.rc == 0
+
+    - name: Déterminer si Docker nécessite un downgrade
+      set_fact:
+        docker_needs_downgrade: "{{ (docker_api_check.rc == 0) and (docker_api_check.stdout | default('') | regex_search('^1\\.(4[4-9]|[5-9]\\d)|^[2-9]') is not none) }}"
+      when: docker_version_check.rc == 0
+
     - name: Installer Docker (Debian/Ubuntu)
       block:
         - name: Ajouter la clé GPG Docker
@@ -89,19 +114,41 @@
             repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
             state: present
 
-        - name: Installer Docker
+        - name: Lister les versions Docker 23.0.x disponibles
+          shell: apt-cache madison docker-ce | grep "5:23.0" | head -1 | awk '{print $3}'
+          register: docker_23_version
+          changed_when: false
+          failed_when: false
+
+        - name: Installer Docker 23.0.x (version compatible avec RKE)
           apt:
             name:
-              - docker-ce
-              - docker-ce-cli
+              - "docker-ce={{ docker_23_version.stdout | default('5:23.0.6-1~ubuntu.22.04~jammy') }}"
+              - "docker-ce-cli={{ docker_23_version.stdout | default('5:23.0.6-1~ubuntu.22.04~jammy') }}"
               - containerd.io
               - docker-buildx-plugin
               - docker-compose-plugin
             state: present
             update_cache: yes
+            allow_downgrade: yes
+          ignore_errors: yes
+          register: docker_install_result
+
+        - name: Installer Docker 23.0.x (fallback si version spécifique échoue)
+          apt:
+            name:
+              - "docker-ce=5:23.0*"
+              - "docker-ce-cli=5:23.0*"
+              - containerd.io
+              - docker-buildx-plugin
+              - docker-compose-plugin
+            state: present
+            update_cache: yes
+            allow_downgrade: yes
+          when: docker_install_result is failed
 
         - name: Vérifier la version de Docker installée
-          command: docker version --format '{{.Server.APIVersion}}'
+          command: docker version --format '{% raw %}{{.Server.APIVersion}}{% endraw %}'
           register: docker_api_version
           changed_when: false
           failed_when: false
@@ -109,7 +156,9 @@
         - name: Avertir si Docker API est trop récent pour RKE
           debug:
             msg: "Docker API version {{ docker_api_version.stdout }} détectée. RKE v1.8.8 nécessite API 1.41. Si des erreurs surviennent, installez Docker 23.0.x manuellement."
-          when: docker_api_version.rc == 0 and docker_api_version.stdout | version_compare('1.44', '>=')
+          when: >
+            docker_api_version.rc == 0 and
+            (docker_api_version.stdout | default('') | regex_search('^1\\.(4[4-9]|[5-9]\\d)|^[2-9]') is not none)
 
         - name: Démarrer et activer Docker
           systemd:
@@ -124,7 +173,7 @@
             append: yes
       when:
         - ansible_os_family == "Debian"
-        - docker_version_check.rc != 0
+        - docker_version_check.rc != 0 or (docker_needs_downgrade | default(false))
 
     - name: Installer Docker (RHEL/CentOS)
       block:
@@ -167,7 +216,7 @@
             append: yes
       when:
         - ansible_os_family == "RedHat"
-        - docker_version_check.rc != 0
+        - docker_version_check.rc != 0 or (docker_needs_downgrade | default(false))
 
     - name: Vérifier que Docker est installé et le service existe
       systemd:

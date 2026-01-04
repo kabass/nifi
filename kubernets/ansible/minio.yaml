@@ -1,0 +1,38 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  annotations:
+    meta.helm.sh/release-name: cert-manager
+  creationTimestamp: "2025-12-28T10:26:45Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: platform-tls-certificate
+  namespace: default
+  resourceVersion: "343809"
+  uid: 24ceee39-1da4-421f-8403-be70c16e66fb
+spec:
+  commonName: 'minio.tecsen.click'
+  dnsNames:
+  - 'minio.tecsen.click'
+  duration: 2160h
+  issuerRef:
+    kind: ClusterIssuer
+    name: platform-cluster-issuer
+  renewBefore: 360h
+  secretName: tls-secret
+status:
+  conditions:
+  - lastTransitionTime: "2025-12-28T10:26:45Z"
+    message: Issuing certificate as Secret does not exist
+    observedGeneration: 1
+    reason: DoesNotExist
+    status: "True"
+    type: Issuing
+  - lastTransitionTime: "2025-12-28T10:26:45Z"
+    message: Issuing certificate as Secret does not exist
+    observedGeneration: 1
+    reason: DoesNotExist
+    status: "False"
+    type: Ready
+  nextPrivateKeySecretName: platform-tls-certificate-g6qls

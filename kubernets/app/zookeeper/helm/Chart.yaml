@@ -1,0 +1,15 @@
+apiVersion: v2
+name: zookeeper
+description: Helm chart for Apache ZooKeeper cluster
+type: application
+version: 1.0.0
+appVersion: "3.9"
+keywords:
+  - zookeeper
+  - coordination
+  - kubernetes
+maintainers:
+  - name: Bassirou KA
+    email: ka.bassirou@gmail.com
+sources:
+  - https://zookeeper.apache.org/

@@ -97,3 +97,21 @@
         var: cluster_status.stdout_lines
       when: cluster_config_stat.stat.exists
 
+    - name: Vérifier les nœuds enregistrés dans le cluster
+      command: "{{ ansible_dir }}/kubectl-config.sh && kubectl get nodes -o wide"
+      register: nodes_check
+      changed_when: false
+      failed_when: false
+      when: cluster_config_stat.stat.exists
+      args:
+        chdir: "{{ ansible_dir }}"
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+
+    - name: Afficher les nœuds enregistrés
+      debug:
+        var: nodes_check.stdout_lines
+      when: 
+        - cluster_config_stat.stat.exists
+        - nodes_check.rc == 0
+

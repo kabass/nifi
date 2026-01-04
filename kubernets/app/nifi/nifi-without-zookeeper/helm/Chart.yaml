@@ -1,0 +1,19 @@
+apiVersion: v2
+name: nifi-platform
+description: Helm chart for Apache Nifi and Nifi Registry in cluster mode with Keycloak authentication
+type: application
+version: 1.0.0
+appVersion: "1.23.2"
+keywords:
+  - nifi
+  - nifi-registry
+  - data-integration
+  - keycloak
+  - kubernetes
+maintainers:
+  - name: Bassirou KA
+    email: ka.bassirou@gmail.com
+sources:
+  - https://nifi.apache.org/
+  - https://nifi.apache.org/registry/
+

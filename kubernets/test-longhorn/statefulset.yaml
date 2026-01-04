@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-longhorn
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: test-longhorn-app
+  namespace: test-longhorn
+spec:
+  serviceName: test-longhorn-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-longhorn-app
+  template:
+    metadata:
+      labels:
+        app: test-longhorn-app
+    spec:
+      containers:
+      - name: test-container
+        image: busybox:latest
+        command:
+          - sleep
+          - "3600"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: longhorn
+      resources:
+        requests:
+          storage: 1Gi
+
+
+

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: aws-cli
+  labels:
+    app: aws-cli
+spec:
+  containers:
+    - name: aws-cli
+      image: amazon/aws-cli:latest
+      command: ["sleep", "infinity"]
+      env:
+        - name: AWS_ACCESS_KEY_ID
+          value: ""
+        - name: AWS_SECRET_ACCESS_KEY
+          value: ""
+        - name: AWS_DEFAULT_REGION
+          value: "us-east-1"
+
+

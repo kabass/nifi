@@ -22,16 +22,11 @@ h1:first-of-type {
 }
 
 h2 {
-    page-break-before: always;
     page-break-after: avoid;
     margin-top: 30px;
     color: #2c3e50;
     border-bottom: 1px solid #ddd;
     padding-bottom: 5px;
-}
-
-h2:first-of-type {
-    page-break-before: auto;
 }
 
 h3 {

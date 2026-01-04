@@ -26,6 +26,8 @@
 
 ---
 
+<div style="page-break-before: always;"></div>
+
 ## 1. Contexte et objectifs
 
 ### Contexte
@@ -43,6 +45,8 @@ Cette intervention permettra de :
 - **Documenter** les procédures de déploiement pour Apache Airflow et Trino
 
 ---
+
+<div style="page-break-before: always;"></div>
 
 ## 2. Architecture de référence
 
@@ -62,6 +66,8 @@ Cette intervention permettra de :
 
 
 ---
+
+<div style="page-break-before: always;"></div>
 
 ## 3. Détail des prestations
 
@@ -151,6 +157,8 @@ Cette intervention permettra de :
 
 ---
 
+<div style="page-break-before: always;"></div>
+
 ## 4. Planification
 
 **Durée totale** : 2 semaines (10 jours ouvrés)
@@ -174,6 +182,8 @@ Cette intervention permettra de :
   - Documentation et optimisation
 
 ---
+
+<div style="page-break-before: always;"></div>
 
 ## 5. Chiffrage
 
@@ -203,8 +213,8 @@ Cette intervention permettra de :
 | Phase 1 - Intervention présentielle (5 JH) | 1 750 000 FCFA |
 | Phase 2 - Support à distance (5 JH) | 1 750 000 FCFA |
 | **TOTAL HT** | **3 500 000 FCFA** |
-| TVA (20%) | 700 000 FCFA |
-| **TOTAL TTC** | **4 200 000 FCFA** |
+| TVA (18%) | 630 000 FCFA |
+| **TOTAL TTC** | **4 130 000 FCFA** |
 
 **Tarif unitaire** : 350 000 FCFA / jour-homme (applicable aux deux phases)
 
@@ -214,6 +224,8 @@ Cette intervention permettra de :
 - **Phase 2** : Facturation à la livraison finale (1 750 000 FCFA HT)
 
 ---
+
+<div style="page-break-before: always;"></div>
 
 ## 6. Modalités d'intervention
 
@@ -230,6 +242,8 @@ Cette intervention permettra de :
 **Communication** : Points d'avancement quotidiens (présentiel) puis selon besoin (distanciel) via Teams, Git, Confluence/Wiki
 
 ---
+
+<div style="page-break-before: always;"></div>
 
 ## 7. Livrables
 
@@ -250,6 +264,8 @@ Cette intervention permettra de :
 
 ---
 
+<div style="page-break-before: always;"></div>
+
 ## 8. Profil du consultant
 
 **Consultant** : Bassirou KA  
@@ -264,6 +280,8 @@ Cette intervention permettra de :
 **Certifications** : CKA (Certified Kubernetes Administrator), ISO-27001, AWS/Azure
 
 ---
+
+<div style="page-break-before: always;"></div>
 
 ## 9. Conditions générales
 

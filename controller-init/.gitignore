@@ -1,0 +1,21 @@
+# Fichiers temporaires Ansible
+*.retry
+*.log
+
+# Fichiers de cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Fichiers de collections
+collections/
+
+# Fichiers de variables sensibles
+*.vault
+vault_pass.txt
+secrets/
+
+# Fichiers de backup
+*.bak
+*.swp
+*~

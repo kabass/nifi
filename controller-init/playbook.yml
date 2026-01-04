@@ -1,0 +1,220 @@
+---
+- name: Préparation du contrôleur Kubernetes
+  hosts: controller
+  become: yes
+  gather_facts: yes
+
+  vars:
+    kubectl_version: "1.30"
+    helm_version: "3.19.3"
+    python_version: "3.10"
+    ansible_version: "2.15.13"
+
+  tasks:
+    - name: Vérifier que le système est RedHat 10
+      fail:
+        msg: "Ce playbook est conçu pour RedHat 10 uniquement"
+      when: ansible_distribution != "RedHat" or ansible_distribution_major_version != "10"
+
+    - name: Mettre à jour le système
+      dnf:
+        name: "*"
+        state: latest
+        update_cache: yes
+
+    - name: Installer les dépendances de base
+      dnf:
+        name:
+          - git
+          - nano
+          - curl
+          - wget
+          - tar
+          - gzip
+          - which
+        state: present
+
+    - name: Installer les dépendances pour Python
+      dnf:
+        name:
+          - gcc
+          - openssl-devel
+          - libffi-devel
+          - make
+          - zlib-devel
+          - bzip2-devel
+          - readline-devel
+          - sqlite-devel
+        state: present
+
+    - name: Vérifier si Python 3.10 est disponible via dnf
+      command: dnf list available python3.10 2>&1
+      register: python310_check
+      changed_when: false
+      failed_when: false
+
+      set_fact:
+        pip310_for_k8s: "{{ pip310_for_kubernetes.results | selectattr('stat.exists') | map(attribute='item') | first | default('/usr/local/bin/pip3.10') }}"
+
+    - name: Installer le package Python kubernetes
+      pip:
+        name: kubernetes
+        state: present
+
+    - name: Installer kubectl version {{ kubectl_version }}
+      block:
+        - name: Télécharger kubectl
+          get_url:
+            url: "https://dl.k8s.io/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl"
+            dest: /tmp/kubectl
+            mode: '0755'
+
+        - name: Installer kubectl
+          copy:
+            src: /tmp/kubectl
+            dest: /usr/local/bin/kubectl
+            mode: '0755'
+            remote_src: yes
+
+        - name: Vérifier l'installation de kubectl
+          command: kubectl version --client --short
+          register: kubectl_version_check
+          changed_when: false
+
+        - name: Afficher la version de kubectl
+          debug:
+            msg: "{{ kubectl_version_check.stdout }}"
+
+        - name: Nettoyer le fichier temporaire kubectl
+          file:
+            path: /tmp/kubectl
+            state: absent
+
+    - name: Installer Helm version {{ helm_version }}
+      block:
+        - name: Télécharger Helm
+          get_url:
+            url: "https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz"
+            dest: /tmp/helm-v{{ helm_version }}-linux-amd64.tar.gz
+            mode: '0644'
+
+        - name: Extraire Helm
+          unarchive:
+            src: /tmp/helm-v{{ helm_version }}-linux-amd64.tar.gz
+            dest: /tmp
+            remote_src: yes
+
+        - name: Installer Helm
+          copy:
+            src: /tmp/linux-amd64/helm
+            dest: /usr/local/bin/helm
+            mode: '0755'
+            remote_src: yes
+
+        - name: Vérifier l'installation de Helm
+          command: helm version --short
+          register: helm_version_check
+          changed_when: false
+
+        - name: Afficher la version de Helm
+          debug:
+            msg: "{{ helm_version_check.stdout }}"
+
+        - name: Nettoyer les fichiers temporaires Helm
+          file:
+            path: "{{ item }}"
+            state: absent
+          loop:
+            - /tmp/helm-v{{ helm_version }}-linux-amd64.tar.gz
+            - /tmp/linux-amd64
+
+    - name: Installer Ansible {{ ansible_version }} avec extensions Kubernetes
+      block:
+        - name: Vérifier les emplacements possibles de pip3.10
+          stat:
+            path: "{{ item }}"
+          register: pip310_locations
+          loop:
+            - /usr/bin/pip3.10
+            - /usr/local/bin/pip3.10
+            - /bin/pip3.10
+
+        - name: Déterminer le chemin de pip3.10
+          set_fact:
+            pip310_executable: "{{ pip310_locations.results | selectattr('stat.exists') | map(attribute='item') | first | default('/usr/local/bin/pip3.10') }}"
+
+        - name: Installer Ansible via pip3.10
+          pip:
+            name: ansible=={{ ansible_version }}
+            executable: "{{ pip310_executable }}"
+            state: present
+
+        - name: Installer les collections Kubernetes pour Ansible
+          command: ansible-galaxy collection install kubernetes.core community.kubernetes
+          args:
+            creates: "{{ ansible_collections_path }}/kubernetes/core"
+          changed_when: true
+
+        - name: Vérifier l'installation d'Ansible
+          command: ansible --version
+          register: ansible_version_check
+          changed_when: false
+
+        - name: Afficher la version d'Ansible
+          debug:
+            msg: "{{ ansible_version_check.stdout_lines }}"
+
+        - name: Vérifier les collections Kubernetes installées
+          command: ansible-galaxy collection list
+          register: collections_list
+          changed_when: false
+
+        - name: Afficher les collections installées
+          debug:
+            msg: "{{ collections_list.stdout_lines }}"
+
+    - name: Vérifier toutes les installations
+      block:
+        - name: Vérifier kubectl
+          command: kubectl version --client --short
+          register: kubectl_check
+          changed_when: false
+
+        - name: Vérifier Helm
+          command: helm version --short
+          register: helm_check
+          changed_when: false
+
+        - name: Vérifier Python
+          command: python3.10 --version
+          register: python_check
+          changed_when: false
+
+        - name: Vérifier le package kubernetes Python
+          command: python3.10 -c "import kubernetes; print(kubernetes.__version__)"
+          register: kubernetes_python_check
+          changed_when: false
+
+        - name: Vérifier git
+          command: git --version
+          register: git_check
+          changed_when: false
+
+        - name: Vérifier nano
+          command: nano --version
+          register: nano_check
+          changed_when: false
+
+        - name: Afficher le résumé des installations
+          debug:
+            msg:
+              - "=========================================="
+              - "Résumé des installations:"
+              - "=========================================="
+              - "kubectl: {{ kubectl_check.stdout }}"
+              - "Helm: {{ helm_check.stdout }}"
+              - "Python: {{ python_check.stdout }}"
+              - "Python kubernetes package: {{ kubernetes_python_check.stdout }}"
+              - "git: {{ git_check.stdout }}"
+              - "nano: {{ nano_check.stdout }}"
+              - "=========================================="

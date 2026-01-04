@@ -1,0 +1,72 @@
+# Default values for zookeeper
+# This is a YAML-formatted file.
+
+# Global settings
+global:
+  namespace: database-zookeeper
+  imageRegistry: ""
+  imagePullSecrets: []
+
+# ZooKeeper Configuration
+zookeeper:
+  enabled: true
+  
+  # Number of replicas (should be odd for quorum: 1, 3, 5, etc.)
+  replicas: 3
+  
+  # Image configuration
+  image:
+    repository: zookeeper
+    tag: "3.9"
+    pullPolicy: IfNotPresent
+  
+  # Storage configuration
+  storageClassName: "longhorn"
+  storage:
+    size: 2Gi
+  
+  # Resources
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  
+  # ZooKeeper configuration
+  config:
+    tickTime: 2000
+    dataDir: /data
+    dataLogDir: /data
+    clientPort: 2181
+    initLimit: 5
+    syncLimit: 2
+    maxClientCnxns: 60
+    autopurge:
+      snapRetainCount: 3
+      purgeInterval: 1
+    # 4LW (Four Letter Words) commands whitelist
+    fourLetterWordsWhitelist: "stat, ruok, conf, isro"
+
+# ServiceAccount
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+# RBAC
+rbac:
+  create: true
+
+# Pod annotations
+podAnnotations: {}
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}

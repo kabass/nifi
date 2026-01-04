@@ -1,0 +1,7 @@
+---
+# Collections Ansible requises pour Kubernetes
+collections:
+  - name: kubernetes.core
+    version: ">=2.4.0"
+  - name: community.kubernetes
+    version: ">=2.0.0"

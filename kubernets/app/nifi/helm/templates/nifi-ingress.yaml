@@ -14,7 +14,8 @@ spec:
   ingressClassName: {{ .Values.nifi.ingress.className }}
   {{- end }}
   rules:
-    - http:
+    - host: 37.27.253.78.sslip.io
+      http:
         paths:
           - path: /
             pathType: Prefix

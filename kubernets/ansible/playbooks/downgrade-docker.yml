@@ -4,7 +4,7 @@
   become: true
   tasks:
     - name: Vérifier la version Docker actuelle
-      shell: docker version --format '{{ "{{" }}.Server.APIVersion{{ "}}" }}'
+      shell: docker version --format '{% raw %}{{.Server.APIVersion}}{% endraw %}'
       register: current_docker_api
       changed_when: false
       failed_when: false
@@ -69,7 +69,7 @@
       when: current_docker_api.rc == 0
 
     - name: Vérifier la nouvelle version Docker
-      shell: docker version --format '{{ "{{" }}.Server.APIVersion{{ "}}" }}'
+      shell: docker version --format '{% raw %}{{.Server.APIVersion}}{% endraw %}'
       register: new_docker_api
       changed_when: false
       failed_when: false

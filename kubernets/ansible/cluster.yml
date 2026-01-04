@@ -4,7 +4,9 @@
 
 nodes:
   - address: 65.109.229.12
+    internal_address: 65.109.229.12
     user: root
+    hostname_override: "node-1"
     role:
       - controlplane
       - etcd
@@ -12,7 +14,9 @@ nodes:
     ssh_key_path: ../vmkey
 
   - address: 37.27.253.78
+    internal_address: 37.27.253.78
     user: root
+    hostname_override: "node-3"
     role:
       - controlplane
       - etcd
@@ -20,7 +24,9 @@ nodes:
     ssh_key_path: ../vmkey
 
   - address: 77.42.23.65
+    internal_address: 77.42.23.65
     user: root
+    hostname_override: "node-2"
     role:
       - controlplane
       - etcd

@@ -1,0 +1,124 @@
+{{- if .Values.zookeeper.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "zookeeper.fullname" . }}
+  labels:
+    {{- include "zookeeper.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "zookeeper.fullname" . }}-headless
+  replicas: {{ .Values.zookeeper.replicas }}
+  selector:
+    matchLabels:
+      {{- include "zookeeper.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "zookeeper.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "zookeeper.serviceAccountName" . }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: init-myid
+        image: "{{ .Values.zookeeper.image.repository }}:{{ .Values.zookeeper.image.tag }}"
+        imagePullPolicy: {{ .Values.zookeeper.image.pullPolicy | default "IfNotPresent" }}
+        command:
+        - sh
+        - -c
+        - |
+          # Extract ordinal from pod name (e.g., zookeeper-0 -> 0, zookeeper-1 -> 1)
+          ORDINAL=$(echo $POD_NAME | sed 's/.*-\([0-9]*\)$/\1/')
+          # ZOO_MY_ID must be 1-based (1, 2, 3...) not 0-based for ZooKeeper
+          ZOO_MY_ID=$((ORDINAL + 1))
+          # Ensure /data directory exists
+          mkdir -p /data
+          # Create myid file with the correct ID
+          echo $ZOO_MY_ID > /data/myid
+          echo "ZooKeeper MY_ID set to: $ZOO_MY_ID (from pod ordinal: $ORDINAL)"
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      containers:
+      - name: zookeeper
+        image: "{{ .Values.zookeeper.image.repository }}:{{ .Values.zookeeper.image.tag }}"
+        imagePullPolicy: {{ .Values.zookeeper.image.pullPolicy | default "IfNotPresent" }}
+        command:
+        - sh
+        - -c
+        - |
+          # Read ZOO_MY_ID from /data/myid file created by initContainer
+          if [ -f /data/myid ]; then
+            export ZOO_MY_ID=$(cat /data/myid)
+            echo "ZOO_MY_ID set to: $ZOO_MY_ID"
+          else
+            # Fallback: calculate from pod name if myid file doesn't exist
+            ORDINAL=$(echo $POD_NAME | sed 's/.*-\([0-9]*\)$/\1/')
+            export ZOO_MY_ID=$((ORDINAL + 1))
+            echo "ZOO_MY_ID calculated from pod name: $ZOO_MY_ID"
+          fi
+          # Start ZooKeeper with the original entrypoint
+          exec /docker-entrypoint.sh zkServer.sh start-foreground
+        ports:
+        - name: client
+          containerPort: 2181
+        - name: follower
+          containerPort: 2888
+        - name: election
+          containerPort: 3888
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        # ZOO_MY_ID is set dynamically in the container command by reading /data/myid
+        {{- if gt (int .Values.zookeeper.replicas) 1 }}
+        - name: ZOO_SERVERS
+          value: "{{ range $i := until (int .Values.zookeeper.replicas) }}{{ if $i }} {{ end }}server.{{ add $i 1 }}={{ include "zookeeper.fullname" $ }}-{{ $i }}.{{ include "zookeeper.fullname" $ }}-headless.{{ $.Values.global.namespace | default $.Release.Namespace }}.svc.cluster.local:2888:3888;2181{{ end }}"
+        {{- end }}
+        - name: ZOO_4LW_COMMANDS_WHITELIST
+          value: {{ .Values.zookeeper.config.fourLetterWordsWhitelist | quote }}
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: conf
+          mountPath: /conf
+        resources:
+          {{- toYaml .Values.zookeeper.resources | nindent 10 }}
+      volumes:
+      - name: conf
+        configMap:
+          name: {{ include "zookeeper.fullname" . }}-config
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: {{ .Values.zookeeper.storageClassName | default "longhorn" }}
+      resources:
+        requests:
+          storage: {{ .Values.zookeeper.storage.size | default "2Gi" }}
+{{- end }}

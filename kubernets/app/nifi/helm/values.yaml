@@ -1,415 +1,313 @@
-# Default values for nifi-platform
-# This is a YAML-formatted file.
-
-# Global settings
+COMPUTED VALUES:
 global:
-  namespace: data-platform-integration
-  imageRegistry: ""
   imagePullSecrets: []
-
-# Nifi Configuration
+  imageRegistry: ""
+  namespace: data-platform-integration
 nifi:
-  enabled: true
-  image:
-    repository: apache/nifi
-    tag: "2.7.1"
-    pullPolicy: IfNotPresent
-  
-  # Cluster configuration
+  affinity: {}
   cluster:
-    enabled: true
-    nodeCount: 3
-    # Autoscaling configuration
     autoscaling:
-      enabled: false
-      minReplicas: 3
-      maxReplicas: 10
-      targetCPUUtilizationPercentage: 70
-      targetMemoryUtilizationPercentage: 80
       behavior:
         scaleDown:
-          stabilizationWindowSeconds: 300
           policies:
-          - type: Percent
+          - periodSeconds: 60
+            type: Percent
             value: 50
-            periodSeconds: 60
+          stabilizationWindowSeconds: 300
         scaleUp:
-          stabilizationWindowSeconds: 0
           policies:
-          - type: Percent
+          - periodSeconds: 60
+            type: Percent
             value: 100
-            periodSeconds: 60
-          - type: Pods
+          - periodSeconds: 60
+            type: Pods
             value: 2
-            periodSeconds: 60
           selectPolicy: Max
+          stabilizationWindowSeconds: 0
+      enabled: false
+      maxReplicas: 10
+      minReplicas: 3
+      targetCPUUtilizationPercentage: 70
+      targetMemoryUtilizationPercentage: 80
+    enabled: true
+    nodeCount: 3
     zookeeper:
       enabled: true
-      # If external ZooKeeper is used, set enabled to false and provide connection string
       external:
+        connectionString: zookeeper:2181
         enabled: false
-        connectionString: "zookeeper:2181"
-      # Internal ZooKeeper configuration (if enabled)
-      replicas: 3
       image:
+        pullPolicy: IfNotPresent
         repository: zookeeper
         tag: "3.9"
-        pullPolicy: IfNotPresent
-      storageClassName: "longhorn"
-      storage:
-        size: 2Gi
+      replicas: 3
       resources:
-        requests:
-          cpu: 500m
-          memory: 512Mi
         limits:
           cpu: 1000m
           memory: 1Gi
-  
-  # Resources
-  resources:
-    requests:
-      cpu: 500m
-      memory: 1Gi
-    limits:
-      cpu: 2000m
-      memory: 4Gi
-  
-  # Storage
-  storage:
-    type: persistentVolumeClaim
-    size: 2Gi
-    storageClassName: "longhorn"
-    accessModes:
-      - ReadWriteOnce
-    # State volume size (separate from main storage)
-    stateSize: 2Gi
-  
-  # Service configuration
-  service:
-    type: ClusterIP
-    port: 8080
-    nodePort: null
-    annotations: {}
-  
-  # Ingress configuration
+        requests:
+          cpu: 500m
+          memory: 512Mi
+      storage:
+        size: 2Gi
+      storageClassName: longhorn
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: apache/nifi
+    tag: 2.7.1
   ingress:
-    enabled: true
-    className: nginx
     annotations: {}
-  
-  # Keycloak authentication
-  keycloak:
-    enabled: false
-    url: "https://keycloak.data-platform.local/auth"
-    realm: "data-platform"
-    clientId: "nifi"
-    clientSecret: ""  # Should be provided via secret
-    adminGroup: "nifi-admin"
-    userGroup: "nifi-user"
-  
-  # JVM settings
+    className: nginx
+    enabled: true
   jvm:
-    heapSize: "1g"  # Reduced to match memory limits
-    maxDirectMemory: "512m"  # Reduced to match memory limits
     additionalJavaArgs: ""
-  
-  # Security configuration
-  security:
-    enabled: true  # Enable security for login/password authentication
-    ssl:
-      enabled: false  # SSL not required for basic login/password auth
-      keystorePassword: ""  # Should be provided via secret
-      truststorePassword: ""  # Should be provided via secret
-  
-  # Properties override
+    heapSize: 1g
+    maxDirectMemory: 512m
+  keycloak:
+    adminGroup: nifi-admin
+    clientId: nifi
+    clientSecret: ""
+    enabled: false
+    realm: data-platform
+    url: https://keycloak.data-platform.local/auth
+    userGroup: nifi-user
+  nodeSelector: {}
+  podAnnotations: {}
   properties:
     nifi:
-      # Cluster properties
       cluster:
-        is:
-          node: "true"
-        node:
-          protocol:
-            port: "8082"
-          connection:
-            timeout: "30 sec"
-          read:
-            timeout: "30 sec"
-          max:
-            concurrent:
-              requests: "100"
         flow:
           election:
             max:
-              wait:
-                time: "300 secs"
               candidates: "1"
-      
-      # Web properties
-      web:
-        http:
-          port: "8080"
-        https:
-          port: "8443"
-          host: "0.0.0.0"
-    
-      # State management
-      state:
-        management:
-          config:
-            file: "./conf/state-management.xml"
-          provider:
-            cluster: "zk-provider"
-      
-      # Content repository
+              wait:
+                time: 300 secs
+        is:
+          node: "true"
+        node:
+          connection:
+            timeout: 30 sec
+          max:
+            concurrent:
+              requests: "100"
+          protocol:
+            port: "8082"
+          read:
+            timeout: 30 sec
       content:
         repository:
-          directory:
-            default: "./content_repository"
           archive:
             max:
               retention:
-                period: "30 days"
-      
-      # Flowfile repository
+                period: 30 days
+          directory:
+            default: ./content_repository
       flowfile:
         repository:
           directory:
-            default: "./flowfile_repository"
-      
-      # Provenance repository
+            default: ./flowfile_repository
       provenance:
         repository:
-          implementation: "org.apache.nifi.provenance.WriteAheadProvenanceRepository"
           directory:
-            default: "./provenance_repository"
+            default: ./provenance_repository
+          implementation: org.apache.nifi.provenance.WriteAheadProvenanceRepository
           max:
             storage:
-              time: "24 hours"
-              size: "10 GB"
-      
-      # Site to site
+              size: 10 GB
+              time: 24 hours
       remote:
         input:
           secure: "false"
           socket:
             port: "10443"
-      
-      # Security
       security:
         user:
+          authorizer: managed-authorizer
           login:
             identity:
-              provider: "keycloak-provider"
-          authorizer: "managed-authorizer"
+              provider: keycloak-provider
           oidc:
-            discovery:
-              url: ""
-            client:
-              id: ""
-              secret: ""
-            scope: "openid profile email"
-            preferred:
-              jwk:
-                url: ""
             additional:
               scopes: ""
             claim:
               identifying:
-                user: "preferred_username"
+                user: preferred_username
+            client:
+              id: ""
+              secret: ""
+            connect:
+              timeout: 5 secs
+            discovery:
+              url: ""
             fallback:
               claims:
                 identifying:
-                  user: "email"
-            truststore:
-              strategy: "JDK"
-            connect:
-              timeout: "5 secs"
+                  user: email
+            preferred:
+              jwk:
+                url: ""
             read:
-              timeout: "5 secs"
-  
-  # Pod annotations
-  podAnnotations: {}
-  
-  # Node selector
-  nodeSelector: {}
-  
-  # Tolerations
-  tolerations: []
-  
-  # Affinity
-  affinity: {}
-
-# Nifi Registry Configuration
-nifiRegistry:
-  enabled: true
-  image:
-    repository: apache/nifi-registry
-    tag: "1.23.2"
-    pullPolicy: IfNotPresent
-  
-  # Replicas
-  replicas: 2
-  
-  # Resources
+              timeout: 5 secs
+            scope: openid profile email
+            truststore:
+              strategy: JDK
+      state:
+        management:
+          config:
+            file: ./conf/state-management.xml
+          provider:
+            cluster: zk-provider
+      web:
+        http:
+          port: "8080"
+        https:
+          host: 0.0.0.0
+          port: "8443"
   resources:
-    requests:
-      cpu: 1000m
-      memory: 2Gi
     limits:
       cpu: 2000m
       memory: 4Gi
-  
-  # Storage
-  storage:
-    type: persistentVolumeClaim
-    size: 2Gi
-    storageClassName: "longhorn"
-    accessModes:
-      - ReadWriteOnce
-  
-  # Database configuration
-  database:
-    type: postgresql  # postgresql or h2
-    # PostgreSQL configuration (if type is postgresql)
-    postgresql:
-      host: "postgresql.data-platform-storage.svc.cluster.local"
-      port: 5432
-      database: "nifi_registry"
-      username: "nifi_registry"
-      password: ""  # Should be provided via secret
-      ssl: false
-    # H2 configuration (if type is h2)
-    h2:
-      dataDir: "./database"
-      storage:
-        size: 2Gi
-  
-  # Service configuration
-  service:
-    type: ClusterIP
-    port: 18080
-    annotations: {}
-  
-  # Ingress configuration
-  ingress:
-    enabled: true
-    className: nginx
-    annotations:
-      cert-manager.io/cluster-issuer: letsencrypt-prod
-    hosts:
-      - host: nifi-registry.data-platform.local
-        paths:
-          - path: /
-            pathType: Prefix
-    tls:
-      - secretName: nifi-registry-tls
-        hosts:
-          - nifi-registry.data-platform.local
-  
-  # Keycloak authentication
-  keycloak:
-    enabled: true
-    url: "https://keycloak.data-platform.local/auth"
-    realm: "data-platform"
-    clientId: "nifi-registry"
-    clientSecret: ""  # Should be provided via secret
-    adminGroup: "nifi-registry-admin"
-    userGroup: "nifi-registry-user"
-  
-  # Security configuration
+    requests:
+      cpu: 500m
+      memory: 1Gi
   security:
     enabled: true
     ssl:
-      enabled: false  # Set to true and create the secret nifi-platform-ssl if you want SSL
-      keystorePassword: ""  # Should be provided via secret
-      truststorePassword: ""  # Should be provided via secret
-  
-  # Properties override
+      enabled: false
+      keystorePassword: ""
+      truststorePassword: ""
+  service:
+    annotations: {}
+    nodePort: null
+    port: 8080
+    type: ClusterIP
+  storage:
+    accessModes:
+    - ReadWriteOnce
+    size: 2Gi
+    stateSize: 2Gi
+    storageClassName: longhorn
+    type: persistentVolumeClaim
+  tolerations: []
+nifiRegistry:
+  affinity: {}
+  database:
+    h2:
+      dataDir: ./database
+      storage:
+        size: 2Gi
+    postgresql:
+      database: nifi_registry
+      host: postgresql.data-platform-storage.svc.cluster.local
+      password: ""
+      port: 5432
+      ssl: false
+      username: nifi_registry
+    type: h2
+  enabled: true
+  image:
+    pullPolicy: IfNotPresent
+    repository: apache/nifi-registry
+    tag: 1.23.2
+  ingress:
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    className: nginx
+    enabled: true
+    hosts:
+    - host: nifi-registry.data-platform.local
+      paths:
+      - path: /
+        pathType: Prefix
+    tls: []
+  keycloak:
+    adminGroup: nifi-registry-admin
+    clientId: nifi-registry
+    clientSecret: ""
+    enabled: false
+    realm: data-platform
+    url: https://keycloak.data-platform.local/auth
+    userGroup: nifi-registry-user
+  nodeSelector: {}
+  podAnnotations: {}
   properties:
     nifi:
       registry:
-        # Web properties
+        db:
+          driverClass: ""
+          maxConnections: "5"
+          password: ""
+          url: ""
+          username: ""
+        security:
+          user:
+            authorizer: managed-authorizer
+            login:
+              identity:
+                provider: keycloak-provider
+            oidc:
+              claim:
+                identifying:
+                  user: preferred_username
+              client:
+                id: ""
+                secret: ""
+              discovery:
+                url: ""
+              fallback:
+                claims:
+                  identifying:
+                    user: email
+              scope: openid profile email
         web:
           http:
             port: "18080"
           https:
+            host: 0.0.0.0
             port: "18443"
-            host: "0.0.0.0"
-        
-        # Database properties
-        db:
-          url: ""
-          driverClass: ""
-          username: ""
-          password: ""
-          maxConnections: "5"
-        
-        # Security
-        security:
-          user:
-            login:
-              identity:
-                provider: "keycloak-provider"
-            authorizer: "managed-authorizer"
-            oidc:
-              discovery:
-                url: ""
-              client:
-                id: ""
-                secret: ""
-              scope: "openid profile email"
-              claim:
-                identifying:
-                  user: "preferred_username"
-              fallback:
-                claims:
-                  identifying:
-                    user: "email"
-  
-  # Pod annotations
-  podAnnotations: {}
-  
-  # Node selector
-  nodeSelector: {}
-  
-  # Tolerations
+  replicas: 1
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+  security:
+    enabled: true
+    ssl:
+      enabled: false
+      keystorePassword: ""
+      truststorePassword: ""
+  service:
+    annotations: {}
+    port: 18080
+    type: ClusterIP
+  storage:
+    accessModes:
+    - ReadWriteOnce
+    size: 2Gi
+    storageClassName: longhorn
+    type: persistentVolumeClaim
   tolerations: []
-  
-  # Affinity
-  affinity: {}
-
-# Secrets configuration
-secrets:
-  # Keycloak secrets
-  keycloak:
-    create: true
-    nifiClientSecret: ""  # Base64 encoded
-    nifiRegistryClientSecret: ""  # Base64 encoded
-  
-  # SSL secrets
-  ssl:
-    create: false
-    keystorePassword: ""  # Base64 encoded
-    truststorePassword: ""  # Base64 encoded
-  
-  # Database secrets
-  database:
-    create: false
-    postgresqlPassword: ""  # Base64 encoded
-
-# ServiceAccount
-serviceAccount:
-  create: true
-  name: ""
-  annotations: {}
-
-# RBAC
-rbac:
-  create: true
-
-# Pod Security Policy
 podSecurityPolicy:
   enabled: false
-
+rbac:
+  create: true
+secrets:
+  database:
+    create: false
+    postgresqlPassword: ""
+  keycloak:
+    create: true
+    nifiClientSecret: ""
+    nifiRegistryClientSecret: ""
+  ssl:
+    create: false
+    keystorePassword: ""
+    truststorePassword: ""
+serviceAccount:
+  annotations: {}
+  create: true
+  name: ""

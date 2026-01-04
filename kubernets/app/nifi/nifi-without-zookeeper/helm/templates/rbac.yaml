@@ -1,0 +1,31 @@
+{{- if .Values.rbac.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "nifi-platform.fullname" . }}
+  labels:
+    {{- include "nifi-platform.labels" . | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "nifi-platform.fullname" . }}
+  labels:
+    {{- include "nifi-platform.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "nifi-platform.fullname" . }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "nifi-platform.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}
+

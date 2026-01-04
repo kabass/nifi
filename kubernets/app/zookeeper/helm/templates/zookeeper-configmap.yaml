@@ -1,0 +1,24 @@
+{{- if .Values.zookeeper.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "zookeeper.fullname" . }}-config
+  labels:
+    {{- include "zookeeper.labels" . | nindent 4 }}
+data:
+  zoo.cfg: |
+    tickTime={{ .Values.zookeeper.config.tickTime }}
+    dataDir={{ .Values.zookeeper.config.dataDir }}
+    dataLogDir={{ .Values.zookeeper.config.dataLogDir }}
+    clientPort={{ .Values.zookeeper.config.clientPort }}
+    initLimit={{ .Values.zookeeper.config.initLimit }}
+    syncLimit={{ .Values.zookeeper.config.syncLimit }}
+    maxClientCnxns={{ .Values.zookeeper.config.maxClientCnxns }}
+    autopurge.snapRetainCount={{ .Values.zookeeper.config.autopurge.snapRetainCount }}
+    autopurge.purgeInterval={{ .Values.zookeeper.config.autopurge.purgeInterval }}
+    server.1=nifi-platform-zookeeper-0.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local:2888:3888;2181
+    server.2=nifi-platform-zookeeper-1.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local:2888:3888;2181
+    server.3=nifi-platform-zookeeper-2.nifi-platform-zookeeper-headless.data-platform-integration.svc.cluster.local:2888:3888;2181
+    # Server list will be set via ZOO_SERVERS environment variable
+
+{{- end }}

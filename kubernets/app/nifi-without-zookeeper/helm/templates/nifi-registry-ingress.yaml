@@ -1,0 +1,42 @@
+{{- if and .Values.nifiRegistry.enabled .Values.nifiRegistry.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "nifi-platform.fullname" . }}-nifi-registry
+  labels:
+    {{- include "nifi-platform.nifiRegistry.labels" . | nindent 4 }}
+  {{- with .Values.nifiRegistry.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.nifiRegistry.ingress.className }}
+  ingressClassName: {{ .Values.nifiRegistry.ingress.className }}
+  {{- end }}
+  {{- if .Values.nifiRegistry.ingress.tls }}
+  tls:
+    {{- range .Values.nifiRegistry.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.nifiRegistry.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ include "nifi-platform.fullname" $ }}-nifi-registry
+                port:
+                  number: {{ $.Values.nifiRegistry.service.port }}
+          {{- end }}
+    {{- end }}
+{{- end }}
+

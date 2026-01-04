@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture DAAS Teranga - Répartition Physique</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header { text-align: center; margin-bottom: 20px; }
+        h1 { color: #006400; margin-bottom: 5px; }
+        p { color: #606060; max-width: 800px; }
+
+        .diagram-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 98%;
+            max-width: 1600px; 
+            overflow-x: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .mermaid { width: 100%; display: flex; justify-content: center; }
+        
+        .legend {
+            margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; font-size: 0.9em;
+            background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd;
+        }
+        .legend-section { display: flex; flex-direction: column; gap: 5px; margin-right: 20px;}
+        .legend-title { font-weight: bold; margin-bottom: 5px; font-size: 0.9em; color: #333; }
+        .legend-item { display: flex; align-items: center; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        
+        footer { margin-top: 30px; color: #888; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fas fa-network-wired"></i> Architecture Détaillée DAAS Teranga</h1>
+        <p><strong>3 VMs HA</strong> (43 Go RAM, 44 vCPU) interconnectées avec les <strong>Services Entreprise Externes</strong>.<br>Focus sur les flux de Données, Métadonnées et <strong>Caching (Redis)</strong>.</p>
+    </header>
+
+    <div class="diagram-container">
+        <div class="mermaid">
+graph TB
+    %% STYLES
+    classDef ingress fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
+    classDef compute fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
+    classDef storage fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef security fill:#ffebee,stroke:#c62828,stroke-width:2px;
+    classDef monitoring fill:#eceff1,stroke:#455a64,stroke-width:2px;
+    classDef governance fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+    
+    %% BLEU TRÈS PÂLE (QUASI BLANC)
+    classDef vmNode fill:#f8fdff,stroke:#0277bd,stroke-width:2px,stroke-dasharray: 5 5;
+    
+    classDef external fill:#eee,stroke:#333,stroke-width:2px,stroke-dasharray: 5 5;
+    classDef ephemeral fill:#fff,stroke:#ef6c00,stroke-width:2px,stroke-dasharray: 5 5;
+
+    %% --- SERVICES EXTERNES (Entreprise) ---
+    subgraph Enterprise_Services [Services Entreprise Existants]
+        direction LR
+        Ext_Keycloak["Keycloak IAM<br/>(OIDC)"]:::security
+        Ext_OPA["OPA Server<br/>(Policy)"]:::security
+        Ext_Elastic["ElasticSearch<br/>(Search Engine)"]:::governance
+    end
+
+    %% --- ACCÈS ---
+    subgraph Access [Point d'Entrée]
+        direction TB
+        LB_VIP["IP Virtuelle MetalLB<br/>192.168.x.x"]:::ingress
+    end
+
+    %% --- VM 1 ---
+    subgraph VM1 ["VM 1 (43GB RAM - 44 vCPU)"]
+        direction LR
+        
+        MetalLB1["MetalLB Spkr"]:::ingress
+        Ingress1["Nginx Ingress"]:::ingress
+        
+        %% Monitoring Redondant
+        Monitor2["Prometheus (HA)"]:::monitoring
+        
+        %% Apps
+        Rancher1["Rancher UI"]:::governance
+        OpenMetadata1["OpenMetadata"]:::governance
+        SODA2["SODA Agent (Replica)"]:::governance
+        
+        %% DataLab
+        subgraph DataLab1 [DataLab]
+            Zeppelin2["Zeppelin (Replica)"]:::compute
+        end
+
+        %% Calcul
+        NiFi1["NiFi Node 1"]:::compute
+        NiFiReg1["NiFi Registry 1"]:::compute
+        KDC2["Kerberos KDC<br/>(Replica)"]:::security
+        Trino1["Trino Worker 1"]:::compute
+        
+        %% AIRFLOW HA (Noeud 1)
+        subgraph Airflow_HA1 [Airflow Node 1]
+            AirflowWeb1["Webserver (UI)"]:::compute
+            AirflowSched1["Scheduler (HA)"]:::compute
+        end
+        
+        %% Data & CACHE
+        Redis1["Redis Master<br/>(Cache & Broker)"]:::storage
+        MinIO1["MinIO-1"]:::storage
+        Kafka1["Kafka-0 (Broker)"]:::compute
+        Longhorn1["Longhorn-1"]:::storage
+        
+        SparkExec1["Spark Executor"]:::ephemeral
+
+        MetalLB1 ~~~ Ingress1 ~~~ Monitor2 ~~~ Rancher1 ~~~ OpenMetadata1 ~~~ SODA2 ~~~ DataLab1 ~~~ NiFi1 ~~~ NiFiReg1 ~~~ KDC2 ~~~ Trino1 ~~~ Airflow_HA1 ~~~ Redis1 ~~~ Kafka1 ~~~ MinIO1 ~~~ Longhorn1 ~~~ SparkExec1
+    end
+
+    %% --- VM 2 ---
+    subgraph VM2 ["VM 2 (43GB RAM - 44 vCPU)"]
+        direction LR
+        
+        MetalLB2["MetalLB Spkr"]:::ingress
+        Ingress2["Nginx Ingress"]:::ingress
+        
+        %% Certs
+        CertMgr["Cert-Manager"]:::security
+        
+        %% Apps
+        Rancher2["Rancher UI 2"]:::governance
+        Superset["Superset (BI)"]:::compute
+        NiFiReg2["NiFi Registry 2"]:::compute
+        
+        %% Calcul
+        Trino2["Trino Worker 2"]:::compute
+        SparkOp1["Spark Op (Leader)"]:::compute
+        
+        %% AIRFLOW HA (Noeud 2)
+        subgraph Airflow_HA2 [Airflow Node 2]
+            AirflowWeb2["Webserver (UI)"]:::compute
+            AirflowSched2["Scheduler (HA)"]:::compute
+        end
+        
+        AirflowWork["Airflow Worker<br/>(K8sExecutor)"]:::ephemeral
+
+        %% Data
+        Kafka2["Kafka-1 (Broker)"]:::compute
+        PG1["Postgres Primary<br/>(Metastore)"]:::storage
+        Longhorn2["Longhorn-2"]:::storage
+
+        MetalLB2 ~~~ Ingress2 ~~~ CertMgr ~~~ Rancher2 ~~~ Superset ~~~ NiFiReg2 ~~~ Trino2 ~~~ SparkOp1 ~~~ Airflow_HA2 ~~~ AirflowWork ~~~ Kafka2 ~~~ PG1 ~~~ Longhorn2
+    end
+
+    %% --- VM 3 ---
+    subgraph VM3 ["VM 3 (43GB RAM - 44 vCPU)"]
+        direction LR
+        
+        MetalLB3["MetalLB Spkr"]:::ingress
+        Ingress3["Nginx Ingress"]:::ingress
+        
+        %% Monitoring Principal
+        Monitor1["Prometheus (Main)"]:::monitoring
+        KDC1["Kerberos KDC<br/>(Primary)"]:::security
+        
+        %% Apps & Gouvernance
+        OpenMetadata2["OpenMetadata 2"]:::governance
+        SODA1["SODA Agent (Primary)"]:::governance
+        
+        %% DataLab
+        subgraph DataLab3 [DataLab]
+            Zeppelin1["Zeppelin (Main)"]:::compute
+        end
+
+        %% Calcul
+        NiFi2["NiFi Node 2"]:::compute
+        TrinoCoord1["Trino Coord"]:::compute
+        SparkOp2["Spark Op (Standby)"]:::compute
+        
+        %% Data & CACHE
+        Redis2["Redis Replica"]:::storage
+        Kafka3["Kafka-2 (Broker)"]:::compute
+        MinIO2["MinIO-2"]:::storage
+        PG2["PG Replica"]:::storage
+        Longhorn3["Longhorn-3"]:::storage
+        
+        SparkExec2["Spark Executor"]:::ephemeral
+
+        MetalLB3 ~~~ Ingress3 ~~~ Monitor1 ~~~ KDC1 ~~~ OpenMetadata2 ~~~ SODA1 ~~~ DataLab3 ~~~ NiFi2 ~~~ TrinoCoord1 ~~~ SparkOp2 ~~~ Redis2 ~~~ Kafka3 ~~~ MinIO2 ~~~ PG2 ~~~ Longhorn3 ~~~ SparkExec2
+    end
+
+    %% --- LIENS EXTERNES ---
+    LB_VIP -.-> MetalLB1 & MetalLB2 & MetalLB3
+    
+    %% Connexions Sécurité Entreprise
+    Ingress1 & Ingress2 & Ingress3 -.->|OIDC| Ext_Keycloak
+    Kafka1 & Kafka2 & Kafka3 -.->|GSSAPI| KDC1
+    TrinoCoord1 -.->|Auth| KDC1
+    OpenMetadata1 -.->|Search| Ext_Elastic
+    Ingress1 & Ingress2 & Ingress3 -.->|Authz| Ext_OPA
+
+    %% --- LIENS INTERNES CLÉS ---
+    
+    %% NiFi Registry Link
+    NiFi1 & NiFi2 -.->|Version Flow| NiFiReg1 & NiFiReg2
+    
+    %% SODA Checks
+    SODA1 & SODA2 -.->|Scan| TrinoCoord1
+    
+    %% Airflow/Superset vers Metastore (Postgres)
+    AirflowSched1 & AirflowSched2 & AirflowWeb1 & AirflowWeb2 -.->|JDBC| PG1
+    Superset -.->|JDBC| PG1
+    
+    %% CACHING (Nouveaux Liens vers Redis)
+    Superset -.->|Cache Query| Redis1
+    AirflowWeb1 & AirflowWeb2 -.->|Cache Session| Redis1
+    
+    %% Data Sync
+    Kafka1 <==> Kafka2
+    Kafka2 <==> Kafka3
+    MinIO1 <==> MinIO2
+    PG1 -.-> PG2
+    Redis1 <==> Redis2
+    NiFi1 <==> NiFi2
+    NiFiReg1 <==> NiFiReg2
+    KDC1 -.-> KDC2
+    Longhorn1 --- Longhorn2 --- Longhorn3
+
+    class VM1,VM2,VM3 vmNode;
+    class Enterprise_Services external;
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-section">
+            <div class="legend-title">Composants</div>
+            <div class="legend-item"><span class="dot" style="background:#f9f9f9; border:1px solid #666"></span> VM Physique</div>
+            <div class="legend-item"><span class="dot" style="background:#eee; border:1px dashed #333"></span> Externe (Entreprise)</div>
+            <div class="legend-item"><span class="dot" style="background:#e8f5e9; border:1px solid #2e7d32"></span> Stockage/DB</div>
+            <div class="legend-item"><span class="dot" style="background:#fff3e0; border:1px solid #ef6c00"></span> Calcul/Appli</div>
+            <div class="legend-item"><span class="dot" style="background:#e1f5fe; border:1px solid #0277bd"></span> Réseau</div>
+            <div class="legend-item"><span class="dot" style="background:#ffebee; border:1px solid #c62828"></span> Sécurité</div>
+        </div>
+        
+        <div class="legend-section">
+            <div class="legend-title">Logique des Flèches</div>
+            <div class="legend-item">
+                <span style="border-top: 2px dotted #333; width: 30px; display:inline-block;"></span>
+                <span>Flux Réseau / Sécurité / Cache</span>
+            </div>
+            <div class="legend-item">
+                <span style="border-top: 3px solid #333; width: 30px; display:inline-block;"></span>
+                <span>Réplication Données (Sync)</span>
+            </div>
+            <div class="legend-item">
+                <span style="border-top: 1px solid #333; width: 30px; display:inline-block;"></span>
+                <span>Infrastructure (Mesh)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>

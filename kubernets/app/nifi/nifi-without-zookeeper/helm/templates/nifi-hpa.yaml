@@ -1,0 +1,33 @@
+{{- if and .Values.nifi.enabled .Values.nifi.cluster.enabled .Values.nifi.cluster.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "nifi-platform.fullname" . }}-nifi
+  labels:
+    {{- include "nifi-platform.nifi.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: {{ include "nifi-platform.fullname" . }}-nifi
+  minReplicas: {{ .Values.nifi.cluster.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.nifi.cluster.autoscaling.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.nifi.cluster.autoscaling.targetCPUUtilizationPercentage }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.nifi.cluster.autoscaling.targetMemoryUtilizationPercentage }}
+  {{- if .Values.nifi.cluster.autoscaling.behavior }}
+  behavior:
+    {{- toYaml .Values.nifi.cluster.autoscaling.behavior | nindent 4 }}
+  {{- end }}
+{{- end }}
+

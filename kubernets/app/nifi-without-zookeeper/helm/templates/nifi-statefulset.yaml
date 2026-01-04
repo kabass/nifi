@@ -1,0 +1,543 @@
+{{- if .Values.nifi.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "nifi-platform.fullname" . }}-nifi
+  labels:
+    {{- include "nifi-platform.nifi.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "nifi-platform.fullname" . }}-nifi-headless
+  replicas: {{ if and .Values.nifi.cluster.enabled .Values.nifi.cluster.autoscaling.enabled }}{{ .Values.nifi.cluster.autoscaling.minReplicas }}{{ else }}{{ .Values.nifi.cluster.nodeCount }}{{ end }}
+  selector:
+    matchLabels:
+      {{- include "nifi-platform.nifi.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nifi-platform.nifi.labels" . | nindent 8 }}
+      {{- with .Values.nifi.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "nifi-platform.serviceAccountName" . }}
+      {{- with .Values.nifi.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nifi.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nifi.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsNonRoot: true
+      initContainers:
+      - name: copy-config
+        image: "{{ .Values.nifi.image.repository }}:{{ .Values.nifi.image.tag }}"
+        imagePullPolicy: {{ .Values.nifi.image.pullPolicy }}
+        command:
+        - sh
+        - -c
+        - |
+          echo "Copying default configuration files from NiFi image..."
+          # Copy all default config files from image to mounted volume
+          if [ -d /opt/nifi/nifi-current/conf ]; then
+            cp -r /opt/nifi/nifi-current/conf/* /conf/ 2>/dev/null || true
+            # Change ownership to nifi user (UID 1000) and ensure proper permissions
+            chown -R 1000:1000 /conf/ 2>/dev/null || true
+            chmod -R 755 /conf/ 2>/dev/null || true
+            echo "Default configuration files copied with proper permissions"
+            ls -la /conf/ | head -20
+          else
+            echo "WARNING: Default conf directory not found in image"
+            echo "Looking for conf in common locations..."
+            find /opt -name "bootstrap.conf" 2>/dev/null | head -5 || true
+          fi
+        volumeMounts:
+        - name: conf
+          mountPath: /conf
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          allowPrivilegeEscalation: false
+      - name: setup-logs
+        image: "{{ .Values.nifi.image.repository }}:{{ .Values.nifi.image.tag }}"
+        imagePullPolicy: {{ .Values.nifi.image.pullPolicy }}
+        command:
+        - sh
+        - -c
+        - |
+          # Create logs directory with proper permissions
+          mkdir -p /opt/nifi/nifi-current/logs
+          chown -R 1000:1000 /opt/nifi/nifi-current/logs
+          chmod -R 755 /opt/nifi/nifi-current/logs
+          # Create empty log file so tail -f doesn't fail immediately
+          touch /opt/nifi/nifi-current/logs/nifi-app.log
+          chown 1000:1000 /opt/nifi/nifi-current/logs/nifi-app.log
+          chmod 644 /opt/nifi/nifi-current/logs/nifi-app.log
+          echo "Logs directory and file created: /opt/nifi/nifi-current/logs/nifi-app.log"
+          ls -la /opt/nifi/nifi-current/logs/
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          allowPrivilegeEscalation: false
+      - name: update-config
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - |
+          # Get pod information from environment
+          POD_NAME="${POD_NAME:-$(hostname)}"
+          POD_NAMESPACE="${POD_NAMESPACE:-default}"
+          POD_IP="${POD_IP:-$(hostname -i)}"
+          SERVICE_NAME="{{ include "nifi-platform.fullname" . }}-nifi-headless"
+          
+          # Calculate cluster node address using headless service DNS
+          # Format: <pod-name>.<headless-service>.<namespace>.svc.cluster.local
+          CLUSTER_NODE_ADDRESS="${POD_NAME}.${SERVICE_NAME}.${POD_NAMESPACE}.svc.cluster.local"
+          REMOTE_INPUT_HOST="${CLUSTER_NODE_ADDRESS}"
+          
+          echo "Pod Name: $POD_NAME"
+          echo "Pod Namespace: $POD_NAMESPACE"
+          echo "Pod IP: $POD_IP"
+          echo "Headless Service: $SERVICE_NAME"
+          echo "Cluster Node Address (FQDN): $CLUSTER_NODE_ADDRESS"
+          
+          SOURCE_CONFIG="/conf-source/nifi.properties"
+          TARGET_CONFIG="/conf/nifi.properties"
+          
+          # Copy source config to target and update it
+          if [ -f "$SOURCE_CONFIG" ]; then
+            echo "Copying and updating nifi.properties..."
+            cp "$SOURCE_CONFIG" "$TARGET_CONFIG"
+            
+            # Clean up the file: remove trailing whitespace and ensure proper line endings
+            sed -i 's/[[:space:]]*$//' "$TARGET_CONFIG"
+            
+            # Replace cluster node address with pod-specific FQDN
+            if grep -q "^nifi.cluster.node.address=" "$TARGET_CONFIG"; then
+              sed -i "s|^nifi.cluster.node.address=.*|nifi.cluster.node.address=${CLUSTER_NODE_ADDRESS}|g" "$TARGET_CONFIG"
+            else
+              echo "nifi.cluster.node.address=${CLUSTER_NODE_ADDRESS}" >> "$TARGET_CONFIG"
+            fi
+            
+            # Replace remote input host with pod-specific FQDN
+            if grep -q "^nifi.remote.input.host=" "$TARGET_CONFIG"; then
+              sed -i "s|^nifi.remote.input.host=.*|nifi.remote.input.host=${REMOTE_INPUT_HOST}|g" "$TARGET_CONFIG"
+            else
+              echo "nifi.remote.input.host=${REMOTE_INPUT_HOST}" >> "$TARGET_CONFIG"
+            fi
+            
+            # Update remote input socket host if it exists
+            if grep -q "^nifi.remote.input.socket.host=" "$TARGET_CONFIG"; then
+              sed -i "s|^nifi.remote.input.socket.host=.*|nifi.remote.input.socket.host=${REMOTE_INPUT_HOST}|g" "$TARGET_CONFIG"
+            fi
+            
+            # nifi.web.proxy.host is set to 0.0.0.0 in configmap
+            # No need to override it with pod-specific FQDN
+            
+            # Update web http host with pod IP address
+            if grep -q "^nifi.web.http.host=" "$TARGET_CONFIG"; then
+              sed -i "s|^nifi.web.http.host=.*|nifi.web.http.host=${POD_IP}|g" "$TARGET_CONFIG"
+            else
+              echo "nifi.web.http.host=${POD_IP}" >> "$TARGET_CONFIG"
+            fi
+            
+            echo "Configuration updated successfully"
+            echo "--- Updated nifi.properties (cluster configuration) ---"
+            grep -E "^(nifi.cluster.node.address|nifi.remote.input.host|nifi.web.proxy.host|nifi.web.http.host|nifi.zookeeper.connect.string)=" "$TARGET_CONFIG" || true
+            echo "------------------------------------------------------"
+          else
+            echo "ERROR: Source configuration file not found at $SOURCE_CONFIG"
+            exit 1
+          fi
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        volumeMounts:
+        - name: conf-source
+          mountPath: /conf-source
+        - name: conf
+          mountPath: /conf
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+      - name: setup-repositories
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - |
+          # Create all repository directories with proper permissions
+          echo "Setting up NiFi repository directories..."
+          
+          # Create directories
+          mkdir -p /opt/nifi/nifi-current/flowfile_repository
+          mkdir -p /opt/nifi/nifi-current/content_repository
+          mkdir -p /opt/nifi/nifi-current/provenance_repository
+          mkdir -p /opt/nifi/nifi-current/state/local
+          mkdir -p /opt/nifi/nifi-current/database
+          mkdir -p /opt/nifi/nifi-current/work
+          
+          # Set ownership to nifi user (UID 1000)
+          chown -R 1000:1000 /opt/nifi/nifi-current/flowfile_repository
+          chown -R 1000:1000 /opt/nifi/nifi-current/content_repository
+          chown -R 1000:1000 /opt/nifi/nifi-current/provenance_repository
+          chown -R 1000:1000 /opt/nifi/nifi-current/state
+          chown -R 1000:1000 /opt/nifi/nifi-current/database
+          chown -R 1000:1000 /opt/nifi/nifi-current/work
+          
+          # Set permissions
+          chmod -R 755 /opt/nifi/nifi-current/flowfile_repository
+          chmod -R 755 /opt/nifi/nifi-current/content_repository
+          chmod -R 755 /opt/nifi/nifi-current/provenance_repository
+          chmod -R 755 /opt/nifi/nifi-current/state
+          chmod -R 755 /opt/nifi/nifi-current/database
+          chmod -R 755 /opt/nifi/nifi-current/work
+          
+          echo "Repository directories created and permissions set"
+          ls -la /opt/nifi/nifi-current/ | grep -E "(flowfile|content|provenance|state|database|work)"
+        volumeMounts:
+        - name: flowfile-repo
+          mountPath: /opt/nifi/nifi-current/flowfile_repository
+        - name: content-repo
+          mountPath: /opt/nifi/nifi-current/content_repository
+        - name: provenance-repo
+          mountPath: /opt/nifi/nifi-current/provenance_repository
+        - name: state
+          mountPath: /opt/nifi/nifi-current/state
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+          allowPrivilegeEscalation: false
+      - name: wait-headless-service
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - |
+          # Wait for headless service to be resolvable
+          POD_NAME="${POD_NAME:-$(hostname)}"
+          POD_NAMESPACE="${POD_NAMESPACE:-default}"
+          SERVICE_NAME="{{ include "nifi-platform.fullname" . }}-nifi-headless"
+          FQDN="${POD_NAME}.${SERVICE_NAME}.${POD_NAMESPACE}.svc.cluster.local"
+          
+          echo "Waiting for headless service to be resolvable..."
+          echo "Service: ${SERVICE_NAME}"
+          echo "FQDN: ${FQDN}"
+          
+          # Wait for service to be available
+          MAX_ATTEMPTS=30
+          ATTEMPT=0
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            # Try to resolve the service
+            if nslookup "${SERVICE_NAME}" >/dev/null 2>&1 || getent hosts "${SERVICE_NAME}" >/dev/null 2>&1; then
+              echo "Headless service ${SERVICE_NAME} is resolvable"
+              break
+            fi
+            ATTEMPT=$((ATTEMPT + 1))
+            echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Headless service ${SERVICE_NAME} not yet resolvable, waiting..."
+            sleep 2
+          done
+          
+          if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+            echo "WARNING: Headless service ${SERVICE_NAME} could not be resolved after ${MAX_ATTEMPTS} attempts"
+            echo "This may cause issues with cluster node address resolution"
+          else
+            echo "Headless service is ready"
+          fi
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+      - name: wait-zookeeper
+        image: busybox:1.35
+        command:
+        - sh
+        - -c
+        - |
+          # Wait for ZooKeeper to be ready
+          ZK_SERVICE="{{ include "nifi-platform.zookeeper.connectionString" . }}"
+          ZK_HOST=$(echo $ZK_SERVICE | cut -d: -f1)
+          ZK_PORT=$(echo $ZK_SERVICE | cut -d: -f2)
+          until nc -z ${ZK_HOST} ${ZK_PORT}; do
+            echo "Waiting for ZooKeeper at ${ZK_HOST}:${ZK_PORT}..."
+            sleep 2
+          done
+          echo "ZooKeeper is ready"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+      containers:
+      - name: nifi
+        image: "{{ .Values.nifi.image.repository }}:{{ .Values.nifi.image.tag }}"
+        imagePullPolicy: {{ .Values.nifi.image.pullPolicy }}
+        # Use a wrapper to ensure container stays alive
+        # The NiFi image entrypoint may terminate, so we wrap it
+        command:
+        - /bin/sh
+        - -c
+        - |
+          # Ensure all required directories exist with proper permissions
+          echo "Ensuring all NiFi directories exist..."
+          
+          # Create directories if they don't exist
+          mkdir -p /opt/nifi/nifi-current/logs
+          mkdir -p /opt/nifi/nifi-current/flowfile_repository
+          mkdir -p /opt/nifi/nifi-current/content_repository
+          mkdir -p /opt/nifi/nifi-current/provenance_repository
+          mkdir -p /opt/nifi/nifi-current/state/local
+          mkdir -p /opt/nifi/nifi-current/database
+          mkdir -p /opt/nifi/nifi-current/work
+          
+          # Set ownership and permissions (in case initContainer didn't run)
+          chown -R 1000:1000 /opt/nifi/nifi-current/logs 2>/dev/null || true
+          chown -R 1000:1000 /opt/nifi/nifi-current/flowfile_repository 2>/dev/null || true
+          chown -R 1000:1000 /opt/nifi/nifi-current/content_repository 2>/dev/null || true
+          chown -R 1000:1000 /opt/nifi/nifi-current/provenance_repository 2>/dev/null || true
+          chown -R 1000:1000 /opt/nifi/nifi-current/state 2>/dev/null || true
+          chown -R 1000:1000 /opt/nifi/nifi-current/database 2>/dev/null || true
+          chown -R 1000:1000 /opt/nifi/nifi-current/work 2>/dev/null || true
+          
+          chmod -R 755 /opt/nifi/nifi-current/flowfile_repository 2>/dev/null || true
+          chmod -R 755 /opt/nifi/nifi-current/content_repository 2>/dev/null || true
+          chmod -R 755 /opt/nifi/nifi-current/provenance_repository 2>/dev/null || true
+          chmod -R 755 /opt/nifi/nifi-current/state 2>/dev/null || true
+          chmod -R 755 /opt/nifi/nifi-current/database 2>/dev/null || true
+          chmod -R 755 /opt/nifi/nifi-current/work 2>/dev/null || true
+          
+          # Create log file
+          touch /opt/nifi/nifi-current/logs/nifi-app.log
+          chown 1000:1000 /opt/nifi/nifi-current/logs/nifi-app.log 2>/dev/null || true
+          
+          echo "Directories verified. Starting NiFi..."
+          
+          # Verify configuration file exists and is readable
+          if [ ! -f /opt/nifi/nifi-current/conf/nifi.properties ]; then
+            echo "ERROR: nifi.properties not found at /opt/nifi/nifi-current/conf/nifi.properties"
+            exit 1
+          fi
+          
+          if [ ! -r /opt/nifi/nifi-current/conf/nifi.properties ]; then
+            echo "ERROR: nifi.properties is not readable"
+            ls -la /opt/nifi/nifi-current/conf/nifi.properties
+            exit 1
+          fi
+          
+          # Verify file is not empty
+          if [ ! -s /opt/nifi/nifi-current/conf/nifi.properties ]; then
+            echo "ERROR: nifi.properties is empty"
+            exit 1
+          fi
+          
+          # Get pod information and calculate FQDN
+          POD_NAME="${POD_NAME:-$(hostname)}"
+          POD_NAMESPACE="${POD_NAMESPACE:-default}"
+          SERVICE_NAME="{{ include "nifi-platform.fullname" . }}-nifi-headless"
+          CLUSTER_NODE_ADDRESS="${POD_NAME}.${SERVICE_NAME}.${POD_NAMESPACE}.svc.cluster.local"
+          
+          # Export environment variables for NiFi start script
+          # NiFi's start.sh uses these variables to set values in nifi.properties
+          # This ensures each pod uses its unique FQDN
+          export NIFI_CLUSTER_ADDRESS="${CLUSTER_NODE_ADDRESS}"
+          export NIFI_REMOTE_INPUT_HOST="${CLUSTER_NODE_ADDRESS}"
+          export NIFI_WEB_PROXY_HOST="${CLUSTER_NODE_ADDRESS}"
+          
+          echo "--- Cluster Configuration (Pod-specific FQDN) ---"
+          echo "Pod Name: $POD_NAME"
+          echo "Cluster Node Address (FQDN): $CLUSTER_NODE_ADDRESS"
+          echo "Exported NIFI_CLUSTER_ADDRESS: $NIFI_CLUSTER_ADDRESS"
+          echo "Exported NIFI_REMOTE_INPUT_HOST: $NIFI_REMOTE_INPUT_HOST"
+          echo "Exported NIFI_WEB_PROXY_HOST: $NIFI_WEB_PROXY_HOST"
+          echo "------------------------------------------------"
+          
+          # Start NiFi in background using the bootstrap
+          # The start.sh script will use the exported environment variables
+          /opt/nifi/scripts/start.sh &
+          
+          # Wait a moment for NiFi to start writing logs
+          sleep 10
+          
+          # Tail the log file to keep container alive
+          # This will keep the container running as long as the log file is being written
+          exec tail -f /opt/nifi/nifi-current/logs/nifi-app.log
+        ports:
+        - name: http
+          containerPort: {{ .Values.nifi.properties.nifi.web.http.port }}
+        - name: https
+          containerPort: {{ .Values.nifi.properties.nifi.web.https.port }}
+        - name: cluster
+          containerPort: {{ .Values.nifi.properties.nifi.cluster.node.protocol.port }}
+        env:
+        - name: NIFI_JVM_HEAP_INIT
+          value: "{{ .Values.nifi.jvm.heapSize }}"
+        - name: NIFI_JVM_HEAP_MAX
+          value: "{{ .Values.nifi.jvm.heapSize }}"
+        - name: NIFI_JVM_MAX_DIRECT_MEMORY
+          value: "{{ .Values.nifi.jvm.maxDirectMemory }}"
+        {{- if .Values.nifi.jvm.additionalJavaArgs }}
+        - name: NIFI_JVM_ARGS
+          value: "{{ .Values.nifi.jvm.additionalJavaArgs }}"
+        {{- end }}
+        - name: NIFI_CLUSTER_NODE_PROTOCOL_PORT
+          value: "{{ .Values.nifi.properties.nifi.cluster.node.protocol.port }}"
+        - name: NIFI_CLUSTER_IS_NODE
+          value: "{{ .Values.nifi.properties.nifi.cluster.is.node }}"
+        - name: NIFI_ZK_CONNECT_STRING
+          value: "{{ include "nifi-platform.zookeeper.connectionString" . }}"
+        - name: NIFI_ELECTION_MAX_WAIT
+          value: "{{ .Values.nifi.properties.nifi.cluster.flow.election.max.wait.time }}"
+        - name: NIFI_CLUSTER_PROTOCOL_IS_SECURE
+          value: "false"
+        # Dynamic node discovery using headless service
+        # Each pod resolves to: <pod-name>.<headless-service>.<namespace>.svc.cluster.local
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        # Calculate pod-specific FQDN and export as environment variables
+        # NiFi's start.sh script uses these variables to set values in nifi.properties
+        # The FQDN is calculated in the entrypoint script before starting NiFi
+        {{- if .Values.nifi.keycloak.enabled }}
+        - name: NIFI_SECURITY_USER_OIDC_DISCOVERY_URL
+          value: "{{ .Values.nifi.keycloak.url }}/realms/{{ .Values.nifi.keycloak.realm }}"
+        - name: NIFI_SECURITY_USER_OIDC_CLIENT_ID
+          value: "{{ .Values.nifi.keycloak.clientId }}"
+        {{- if .Values.secrets.keycloak.create }}
+        - name: NIFI_SECURITY_USER_OIDC_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "nifi-platform.fullname" . }}-keycloak
+              key: nifi-client-secret
+        {{- else }}
+        - name: NIFI_SECURITY_USER_OIDC_CLIENT_SECRET
+          value: "{{ .Values.nifi.keycloak.clientSecret }}"
+        {{- end }}
+        {{- end }}
+        volumeMounts:
+        - name: conf
+          mountPath: /opt/nifi/nifi-current/conf
+        - name: flowfile-repo
+          mountPath: /opt/nifi/nifi-current/flowfile_repository
+        - name: content-repo
+          mountPath: /opt/nifi/nifi-current/content_repository
+        - name: provenance-repo
+          mountPath: /opt/nifi/nifi-current/provenance_repository
+        - name: state
+          mountPath: /opt/nifi/nifi-current/state
+        {{- if .Values.nifi.security.ssl.enabled }}
+        - name: ssl-secrets
+          mountPath: /opt/nifi/nifi-current/conf/keystore.p12
+          subPath: keystore.p12
+          readOnly: true
+        - name: ssl-secrets
+          mountPath: /opt/nifi/nifi-current/conf/truststore.p12
+          subPath: truststore.p12
+          readOnly: true
+        {{- end }}
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+        resources:
+          {{- toYaml .Values.nifi.resources | nindent 10 }}
+        # Health checks disabled temporarily to debug crash issue
+        # Uncomment once NiFi starts successfully
+        # livenessProbe:
+        #   httpGet:
+        #     path: /nifi-api/system-diagnostics
+        #     port: {{ .Values.nifi.properties.nifi.web.http.port }}
+        #   initialDelaySeconds: 180
+        #   periodSeconds: 30
+        #   timeoutSeconds: 10
+        #   failureThreshold: 5
+        #   successThreshold: 1
+        # readinessProbe:
+        #   httpGet:
+        #     path: /nifi-api/flow/status
+        #     port: {{ .Values.nifi.properties.nifi.web.http.port }}
+        #   initialDelaySeconds: 120
+        #   periodSeconds: 15
+        #   timeoutSeconds: 10
+        #   failureThreshold: 10
+        #   successThreshold: 1
+      volumes:
+      - name: conf-source
+        configMap:
+          name: {{ include "nifi-platform.fullname" . }}-nifi-config
+      - name: conf
+        emptyDir: {}
+      {{- if .Values.nifi.security.ssl.enabled }}
+      - name: ssl-secrets
+        secret:
+          secretName: {{ include "nifi-platform.fullname" . }}-ssl
+      {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: flowfile-repo
+    spec:
+      accessModes:
+        {{- toYaml .Values.nifi.storage.accessModes | nindent 8 }}
+      storageClassName: {{ .Values.nifi.storage.storageClassName | default "longhorn" }}
+      resources:
+        requests:
+          storage: {{ .Values.nifi.storage.size }}
+  - metadata:
+      name: content-repo
+    spec:
+      accessModes:
+        {{- toYaml .Values.nifi.storage.accessModes | nindent 8 }}
+      storageClassName: {{ .Values.nifi.storage.storageClassName | default "longhorn" }}
+      resources:
+        requests:
+          storage: {{ .Values.nifi.storage.size }}
+  - metadata:
+      name: provenance-repo
+    spec:
+      accessModes:
+        {{- toYaml .Values.nifi.storage.accessModes | nindent 8 }}
+      storageClassName: {{ .Values.nifi.storage.storageClassName | default "longhorn" }}
+      resources:
+        requests:
+          storage: {{ .Values.nifi.storage.size }}
+  - metadata:
+      name: state
+    spec:
+      accessModes:
+        {{- toYaml .Values.nifi.storage.accessModes | nindent 8 }}
+      storageClassName: {{ .Values.nifi.storage.storageClassName | default "longhorn" }}
+      resources:
+        requests:
+          storage: {{ .Values.nifi.storage.stateSize | default "2Gi" }}
+{{- end }}
+
